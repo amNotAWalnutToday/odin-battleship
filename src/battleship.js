@@ -15,6 +15,7 @@ const battleShips = (() => {
     };
 
     const gameBoard = (grid) => {
+        //board objects
         const ships = [];
 
         const generateGrid = () => {
@@ -35,6 +36,7 @@ const battleShips = (() => {
         }
         grid = generateGrid();
 
+        //board manipulators
         const setBoard = (coords) => {
             const spots = grid.filter(coord => {
                 return coords === coord.coordinate;
@@ -46,22 +48,11 @@ const battleShips = (() => {
             const spots = grid.filter(coord => {
                 if(coord.shipHere === true && coord.coordinate === coords ) return coord;
             });
-     
             if(spots.length < 1 || spots === undefined) return false;
             return spots[0].shipHere;
         };
 
-        const placeShip = (length, coords, direction) => {
-            const x = Number(coords[1]);
-            const y = Number(coords[3]);
-            const con = (
-            x + length >= 10 && direction === 'horizontal')
-            || 
-            (y + length >= 10 && direction === 'vertical');
-            if(con) return 'error';
-
-            const newCoords = [];
-            const newShip = ship('', length, 0, false);
+        const getDirections = (length, x, y, direction, newCoords = []) => {
             for(let i = 0; i < length; i++) {
                 const horizontal = `[${x+i},${y}]`;
                 const vertical = `[${x},${y+i}]`;
@@ -80,14 +71,24 @@ const battleShips = (() => {
                     newCoords.push(vertical);
                 }
             }
-
-            newShip.coords = newCoords;
-            ships.push(newShip);
-            console.log(newShip);
-            return newShip;
+            return newCoords;
         }
 
-        
+        const placeShip = (length, coords, direction) => {
+            const [x, y] = [Number(coords[1]), Number(coords[3])];
+            const con =
+            (x + length >= 10 && direction === 'horizontal')
+            || 
+            (y + length >= 10 && direction === 'vertical');
+            if(con) return 'error';
+
+            const newCoords = getDirections(length, x, y, direction);
+            if (newCoords === 'error') return 'error';
+            const newShip = ship(newCoords, length, 0, false);
+
+            ships.push(newShip);
+            return newShip;
+        }
 
         return { grid, placeShip, ships, checkGridForShip };
     };
