@@ -22,52 +22,80 @@ const battleShips = (() => {
 
             for(let i = 0; i <= 9; i++){
                 for(let j = 0; j <= 9; j++){
-                    gridMap.push(`[${i},${j}]`);
+                    gridMap.push({
+                        coordinate: `[${i},${j}]`,
+                        shipHere: false,
+                        hitHere: false,
+                    });
                 }
             }
 
             return gridMap;
+
         }
+        grid = generateGrid();
+
+        const setBoard = (coords) => {
+            const spots = grid.filter(coord => {
+                return coords === coord.coordinate;
+            })
+            return spots[0].shipHere = true;
+        };
+
+        const checkGridForShip = (coords) => {
+            const spots = grid.filter(coord => {
+                if(coord.shipHere === true && coord.coordinate === coords ) return coord;
+            });
+     
+            if(spots.length < 1 || spots === undefined) return false;
+            return spots[0].shipHere;
+        };
 
         const placeShip = (length, coords, direction) => {
             const x = Number(coords[1]);
             const y = Number(coords[3]);
-            const con = x + length >= 9 || y + length >= 9
+            const con = (
+            x + length >= 10 && direction === 'horizontal')
+            || 
+            (y + length >= 10 && direction === 'vertical');
             if(con) return 'error';
 
             const newCoords = [];
             const newShip = ship('', length, 0, false);
-            if(direction === 'horizontal'){
-                for(let i = 0; i < length; i++){
-                    newCoords.push(`[${x+i},${y}]`);
-                }
-            }else if (direction === 'vertical'){
-                for(let i = 0; i < length; i++){
-                    newCoords.push(`[${x},${y+i}]`);
+            for(let i = 0; i < length; i++) {
+                const horizontal = `[${x+i},${y}]`;
+                const vertical = `[${x},${y+i}]`;
+                const [checkH, checkV] = [
+                    checkGridForShip(horizontal),
+                    checkGridForShip(vertical),
+                ]
+
+                if(direction === 'horizontal') {
+                    if(checkH) return 'error';
+                    setBoard(horizontal);
+                    newCoords.push(horizontal);
+                }else if (direction === 'vertical') {
+                    if(checkV) return 'error';
+                    setBoard(vertical);
+                    newCoords.push(vertical);
                 }
             }
 
             newShip.coords = newCoords;
             ships.push(newShip);
-            return newShip
+            console.log(newShip);
+            return newShip;
         }
 
-        grid = generateGrid();
+        
 
-        return { grid, placeShip, ships };
+        return { grid, placeShip, ships, checkGridForShip };
     };
-
-    const player1Board = gameBoard();
-    player1Board.placeShip(4,'[0,0]','vertical')
-    player1Board.placeShip(4,'[0,0]','vertical')
 
     return {
         ship,
-        player1Board,
+        gameBoard,
     }
 })();
-
-
-console.log(battleShips.player1Board.ships);
 
 export default battleShips;
