@@ -67,3 +67,31 @@ describe('board w/ ships' ,() => {
         expect(newBoard.lose()).toBe(true);
     });
 });
+
+describe('player functions', () => {
+    const player1 = battleShips.player(1);
+    const player2 = battleShips.player(2);
+    const newBoard = battleShips.gameBoard();
+
+    test('player 1 should take there turn first', () => {
+        expect(player1.isTurn).toBe(true);
+    });
+
+    test('player can target a coordinate to attack', () => {
+        expect(player1.takeTurn('[0,0]', newBoard, player1, player2)).toMatch('miss at [0,0]');
+    });
+
+    test('turn changes when player chooses enemy spot', () => {
+        expect(player2.isTurn).toBe(true);
+    });
+
+    test('can cycle turns', () => {
+        player2.takeTurn('[1,0]', newBoard, player2, player1);
+        expect(player1.isTurn).toBe(true);
+    });
+
+    test('only takes turn at appropriate time', () => {
+        player2.takeTurn('[3,0]', newBoard, player2, player1);
+        expect(player2.takeTurn('[2,0]', newBoard, player2, player1)).toBeFalsy();
+    });
+});

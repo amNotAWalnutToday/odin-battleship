@@ -125,10 +125,30 @@ const battleShips = (() => {
         return { grid, placeShip, ships, checkGridForShip, receiveAttack, lose };
     };
 
+    const player = (playerNumber) => {
+        const firstTurn = (() => {
+            if(playerNumber === 1) return true;
+            else return false;
+        });
+
+        let isTurn = firstTurn(); 
+
+        const takeTurn = (coords, board, user, target) => {
+            if(user.isTurn === false) return;
+            const results = board.receiveAttack(coords);
+            user.isTurn = false;
+            target.isTurn = true;
+            return `${results} at ${coords}`;
+        }
+
+        return { playerNumber, takeTurn, isTurn };
+    }
+
     return {
         ship,
         gameBoard,
-    }
+        player,
+    };
 })();
 
 export default battleShips;
