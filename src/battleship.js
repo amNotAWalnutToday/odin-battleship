@@ -1,17 +1,18 @@
 const battleShips = (() => {
     //Factories
-    const ship = (coords, length, timesHit, sunk, hit, isSunk) => {
-        hit = () => {
-            timesHit++;
+    const ship = (coords, length, timesHit, sunk) => {
+        
+        const hit = (target) => {
+            target.timesHit++;
         }
 
-        isSunk = () => {
-            if (timesHit >= length) {
-                sunk = true;
+        const isSunk = (target) => {
+            if (target.timesHit >= target.length) {
+                target.sunk = true;
             }
-        }
+        };
 
-        return { coords, length, timesHit, sunk, hit, isSunk }
+        return { coords, length, timesHit, sunk, hit ,isSunk, }
     };
 
     const gameBoard = (grid) => {
@@ -30,26 +31,33 @@ const battleShips = (() => {
                     });
                 }
             }
-
             return gridMap;
-
-        }
+        };
         grid = generateGrid();
 
         //board manipulators
-        const setBoard = (coords) => {
+        const setBoard = (coords, prop) => {
             const spots = grid.filter(coord => {
                 return coords === coord.coordinate;
             })
-            return spots[0].shipHere = true;
+            if(prop === 'shipHere') return spots[0].shipHere = true;
+            else return spots[0].hitHere = true;
         };
 
         const checkGridForShip = (coords) => {
             const spots = grid.filter(coord => {
-                if(coord.shipHere === true && coord.coordinate === coords ) return coord;
+                if(coord.shipHere && coord.coordinate === coords ) return coord;
             });
-            if(spots.length < 1 || spots === undefined) return false;
+            if(spots.length < 1 || !spots) return false;
             return spots[0].shipHere;
+        };
+
+        const checkGridForHit = (coords) => {
+            const spots = grid.filter(coord => {
+                if(coord.hitHere && coord.coordinate === coords) return coord;
+            });
+            if(spots.length < 1 || !spots) return false;
+            return spots[0].hitHere;
         };
 
         const getDirections = (length, x, y, direction, newCoords = []) => {
@@ -63,16 +71,16 @@ const battleShips = (() => {
 
                 if(direction === 'horizontal') {
                     if(checkH) return 'error';
-                    setBoard(horizontal);
+                    setBoard(horizontal, 'shipHere');
                     newCoords.push(horizontal);
                 }else if (direction === 'vertical') {
                     if(checkV) return 'error';
-                    setBoard(vertical);
+                    setBoard(vertical, 'shipHere');
                     newCoords.push(vertical);
                 }
             }
             return newCoords;
-        }
+        };
 
         const placeShip = (length, coords, direction) => {
             const [x, y] = [Number(coords[1]), Number(coords[3])];
@@ -88,9 +96,24 @@ const battleShips = (() => {
 
             ships.push(newShip);
             return newShip;
-        }
+        };
 
-        return { grid, placeShip, ships, checkGridForShip };
+        const receiveAttack = (coords) => {
+            if(checkGridForHit(coords)) return;
+            setBoard(coords, 'hitHere');      
+            if (!checkGridForShip(coords)) return 'miss';
+            let thisShip;
+            ships.forEach(ship => {
+                for(let i = 0; i < ship.coords.length; i++){
+                    if(coords === ship.coords[i]) thisShip = ship;
+                }
+            });
+            thisShip.hit(thisShip);
+            thisShip.isSunk(thisShip);
+            return 'hit';
+        };
+
+        return { grid, placeShip, ships, checkGridForShip, receiveAttack };
     };
 
     return {
