@@ -18,6 +18,7 @@ const battleShips = (() => {
     const gameBoard = (grid) => {
         //board objects
         const ships = [];
+        const attackLog = [];
 
         const generateGrid = () => {
             const gridMap = [];
@@ -99,8 +100,10 @@ const battleShips = (() => {
         };
 
         const receiveAttack = (coords) => {
+            if(lose()) return 'game over';
             if(checkGridForHit(coords)) return;
             setBoard(coords, 'hitHere');      
+            attackLog.push(coords);
             if (!checkGridForShip(coords)) return 'miss';
             let thisShip;
             ships.forEach(ship => {
@@ -110,7 +113,6 @@ const battleShips = (() => {
             });
             thisShip.hit(thisShip);
             thisShip.isSunk(thisShip);
-            lose();
             return 'hit';
         };
 
@@ -122,10 +124,19 @@ const battleShips = (() => {
             return comparison.length >= ships.length;
         }
 
-        return { grid, placeShip, ships, checkGridForShip, receiveAttack, lose };
+        return { 
+            grid,
+            placeShip,
+            ships,
+            attackLog,
+            checkGridForShip,
+            checkGridForHit,
+            receiveAttack,
+            lose,
+        };
     };
 
-    const player = (playerNumber) => {
+    const player = (playerNumber, isAi = false) => {
         const firstTurn = (() => {
             if(playerNumber === 1) return true;
             else return false;
@@ -134,14 +145,24 @@ const battleShips = (() => {
         let isTurn = firstTurn(); 
 
         const takeTurn = (coords, board, user, target) => {
-            if(user.isTurn === false) return;
+            if(!user.isTurn || board.checkGridForHit(coords)) return;
             const results = board.receiveAttack(coords);
+            if(results === 'game over') return 'game over';
             user.isTurn = false;
             target.isTurn = true;
+            if(target.isAi) aiTakesTurn(board, target, user);
             return `${results} at ${coords}`;
         }
 
-        return { playerNumber, takeTurn, isTurn };
+        const aiTakesTurn = (board, user, target) => {
+            const [x, y] = [Math.floor(Math.random() * 9), Math.floor(Math.random() * 9)];
+            const coords = `[${x},${y}]`;
+            const results = takeTurn(coords, board, user, target);
+            if(!results) return aiTakesTurn(board,user,target)
+            else return results;
+        }
+
+        return { playerNumber, takeTurn, aiTakesTurn, isTurn, isAi };
     }
 
     return {
