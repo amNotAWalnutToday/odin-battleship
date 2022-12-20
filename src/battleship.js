@@ -110,10 +110,19 @@ const battleShips = (() => {
             });
             thisShip.hit(thisShip);
             thisShip.isSunk(thisShip);
+            lose();
             return 'hit';
         };
 
-        return { grid, placeShip, ships, checkGridForShip, receiveAttack };
+        const lose = () => {
+            const comparison = [];
+            ships.forEach(ship => {
+                if(ship.sunk === true) comparison.push(ship);
+            });
+            return comparison.length >= ships.length;
+        }
+
+        return { grid, placeShip, ships, checkGridForShip, receiveAttack, lose };
     };
 
     return {

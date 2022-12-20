@@ -59,4 +59,11 @@ describe('board w/ ships' ,() => {
     test('ship gets destroyed when damage exceeds length', () => {
         expect(player1Board.ships[0].sunk).toBe(true);
     });
+
+    const newBoard = battleShips.gameBoard();
+    newBoard.placeShip(1,'[0,0]','horizontal');
+    newBoard.receiveAttack('[0,0]');
+    test('board knows when all ships have been destroyed', () => {
+        expect(newBoard.lose()).toBe(true);
+    });
 });
