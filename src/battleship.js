@@ -165,10 +165,20 @@ const battleShips = (() => {
         return { playerNumber, takeTurn, aiTakesTurn, isTurn, isAi };
     }
 
+    const player1 = player(1, false);
+    const player2 = player(2, false);
+    const board1 = gameBoard();
+    const board2 = gameBoard();
+
     return {
         ship,
         gameBoard,
         player,
+        //^not need^;
+        player1,
+        player2,
+        board1,
+        board2,
     };
 })();
 
