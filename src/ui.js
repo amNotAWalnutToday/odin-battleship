@@ -46,6 +46,8 @@ const userInterface = (() => {
         const addPlayerIcons = () => {
             const player1Btn = document.createElement('button');
             const player2Btn = document.createElement('button');
+            player1Btn.setAttribute('id', 'player-1');
+            player2Btn.setAttribute('id', 'player-2');
             player1Btn.textContent = 'Player 1';
             player2Btn.textContent = 'Player 2';
             container.appendChild(player1Btn);
@@ -68,21 +70,39 @@ const userInterface = (() => {
                 btn.setAttribute('id', `grid-${playerNumber}-${x},${y}`);
                 btn.classList.add(`p${playerNumber}`); 
                 btn.style.cssText = 'border: 2px solid black; width: 25px; height: 25px;'
-                console.log(btn.id);
                 grid.appendChild(btn);
             });
         };
 
-        const setPlayer2Grid = () => {
+        const removeGrid = () => {
+            const grid = document.querySelector('#grid');
+            while(grid.firstChild){
+                grid.removeChild(grid.firstChild);
+            }
+        }
 
+        const changeGrid = (player, board) => {
+            removeGrid();
+            setGridToPlayer(player, board);
+        }
+
+        const addEvents = () => {
+            document.querySelector('#player-1')
+                .addEventListener('click', () => {
+                    changeGrid(battleShips.player1, battleShips.board1);
+                });
+            document.querySelector('#player-2')
+                .addEventListener('click', () => {
+                    changeGrid(battleShips.player2, battleShips.board2);
+                });
         };
 
         const loadGameScreen = () => {
             setContainer();
             addPlayerIcons();
             addGrid();
+            addEvents();
             setGridToPlayer(battleShips.player1, battleShips.board1);
-            setGridToPlayer(battleShips.player2, battleShips.board2);
         };
 
         return { loadGameScreen, }
