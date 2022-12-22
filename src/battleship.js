@@ -119,7 +119,7 @@ const battleShips = (() => {
         const lose = () => {
             const comparison = [];
             ships.forEach(ship => {
-                if(ship.sunk === true) comparison.push(ship);
+                if(ship.sunk) comparison.push(ship);//change
             });
             return comparison.length >= ships.length;
         }
