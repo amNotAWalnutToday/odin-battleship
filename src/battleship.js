@@ -62,14 +62,24 @@ const battleShips = (() => {
         };
 
         const getDirections = (length, x, y, direction, newCoords = []) => {
+            let [checkH, checkV] = [false, false]
+            
+            for(let i = 0; i < length; i++){
+                const horizontal = `[${x+i},${y}]`;
+                if(checkH) break;
+                checkH = checkGridForShip(horizontal)
+            }
+
+            for(let i = 0; i < length; i++){
+                const vertical = `[${x},${y+i}]`;
+                if(checkV) break;
+                checkV = checkGridForShip(vertical)
+            }
+
             for(let i = 0; i < length; i++) {
                 const horizontal = `[${x+i},${y}]`;
                 const vertical = `[${x},${y+i}]`;
-                const [checkH, checkV] = [
-                    checkGridForShip(horizontal),
-                    checkGridForShip(vertical),
-                ]
-
+                
                 if(direction === 'horizontal') {
                     if(checkH) return 'error';
                     setBoard(horizontal, 'shipHere');
