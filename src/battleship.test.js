@@ -39,37 +39,100 @@ describe('board w/o ships', () => {
 });
 
 describe('board w/ ships' ,() => {
-    player1Board.placeShip(5 ,'[0,0]', 'horizontal');
-    player1Board.receiveAttack('[1,0]');
-    player1Board.receiveAttack('[2,0]');
-    player1Board.receiveAttack('[3,0]');
-    player1Board.receiveAttack('[4,0]');
+
+    let testBoard = battleShips.gameBoard();
+
+    beforeEach(() => {
+        testBoard = battleShips.gameBoard();  
+        testBoard.placeShip(4 ,'[0,0]', 'horizontal');
+        testBoard.receiveAttack('[1,0]');
+        testBoard.receiveAttack('[2,0]');
+        testBoard.receiveAttack('[3,0]');
+        testBoard.receiveAttack('[4,0]');
+    });
     
     test('board recognizes ships are at specified coordinates', () => {
-        expect(player1Board.checkGridForShip('[0,0]')).toBe(true);
+        expect(testBoard.checkGridForShip('[0,0]')).toBe(true);
     }); 
 
     test('ships cannot overlap', () => {
-        expect(player1Board.placeShip(5 ,'[0,0]', 'vertical')).toBe('error');
+        expect(testBoard.placeShip(5 ,'[0,0]', 'vertical')).toBe('error');
     });
 
     test('board recognizes that a ship has been hit', () => {
-        expect(player1Board.receiveAttack('[0,0]')).toMatch('hit');
+        expect(testBoard.receiveAttack('[0,0]')).toMatch('hit');
     });
 
     test('ship objects take the hit', () => {
-        expect(player1Board.ships[0].timesHit).toBeGreaterThan(0);
+        expect(testBoard.ships[0].timesHit).toBeGreaterThan(0);
     });
 
     test('ship gets destroyed when damage exceeds length', () => {
-        expect(player1Board.ships[0].sunk).toBe(true);
+        testBoard.receiveAttack('[0,0]')
+        expect(testBoard.ships[0].sunk).toBe(true);
     });
 
     const newBoard = battleShips.gameBoard();
-    newBoard.placeShip(1,'[0,0]','horizontal');
-    newBoard.receiveAttack('[0,0]');
     test('board knows when all ships have been destroyed', () => {
         expect(newBoard.receiveAttack('[4,4]')).toBe('game over');
+    });
+});
+
+describe('ship placing limits', () => {
+    let testBoard = battleShips.gameBoard();
+    let testPlayer = battleShips.player(1, false);
+    let testAi = battleShips.player(2, true);
+    
+    beforeEach(() => {
+        testBoard = battleShips.gameBoard();
+        testPlayer = battleShips.player(1, false);
+        testAi = battleShips.player(2, true);
+    });
+
+    test('board storage for ships have specific numbers', () => {
+        expect(testBoard.unplacedShips).toStrictEqual([
+            {name: 'carrier', length: 5, number: 1},
+            {name: 'battleship', length: 4, number: 1},
+            {name: 'submarine', length: 3, number: 4},
+            {name: 'patrol boat', length: 2, number: 3}
+        ]);
+    });
+
+    test('number of ships should be deducted from storage when placed', () => {
+        testBoard.placeShip(4, '[0,1]', 'horizontal')
+        expect(testBoard.unplacedShips[1].number).toBe(0);
+    });
+
+    test('all ships can be removed from storage', () => {
+        testBoard.placeShip(5, '[0,1]', 'horizontal');
+        testBoard.placeShip(4, '[0,2]', 'horizontal');
+        testBoard.placeShip(3, '[0,3]', 'horizontal');
+        testBoard.placeShip(3, '[0,4]', 'horizontal');
+        testBoard.placeShip(3, '[0,5]', 'horizontal');
+        testBoard.placeShip(3, '[0,6]', 'horizontal');
+        testBoard.placeShip(2, '[0,7]', 'horizontal');
+        testBoard.placeShip(2, '[0,8]', 'horizontal');
+        testBoard.placeShip(2, '[0,9]', 'horizontal');
+
+        const totalShipsInStorage = () => {
+            const shipNumbers = [
+                testBoard.unplacedShips[0].number,
+                testBoard.unplacedShips[1].number,
+                testBoard.unplacedShips[2].number,
+                testBoard.unplacedShips[3].number,
+            ];
+            return shipNumbers.reduce((num, total) => {
+                total += num;
+                return total;
+            }, 0);
+        };
+
+        expect(totalShipsInStorage()).toBe(0);
+    });
+
+    test('can only place specified number(1) of carriers', () => {
+        testBoard.placeShip(5, '[0,1]', 'horizontal')
+        expect(testBoard.placeShip(5, '[0,0]', 'horizontal')).toBeFalsy();
     });
 });
 
@@ -77,7 +140,7 @@ describe('player functions', () => {
     const player1 = battleShips.player(1);
     const player2 = battleShips.player(2);
     const newBoard = battleShips.gameBoard();
-    newBoard.placeShip(1,'[7,7]','horizontal');
+    newBoard.placeShip(2,'[7,7]','horizontal');
 
     test('player 1 should take there turn first', () => {
         expect(player1.isTurn).toBe(true);
@@ -109,6 +172,8 @@ describe('player functions', () => {
     test('player can no longer take turns after game has ended', () => {
         player1.isTurn = true;
         player1.takeTurn('[7,7]', newBoard, player1, player2);
+        player1.isTurn = true;
+        player1.takeTurn('[8,7]', newBoard, player1, player2);
         expect(player2.takeTurn('[1,1]', newBoard, player2, player1)).toBe('game over');
     });
 });
@@ -122,7 +187,7 @@ describe('Ai logic', () => {
         testBoard = battleShips.gameBoard();
         testPlayer = battleShips.player(1, false);
         testAi = battleShips.player(2, true);
-        testBoard.placeShip(1,'[7,7]','horizontal');
+        testBoard.placeShip(2,'[7,7]','horizontal');
     });
 
     test('ai can take turn', () => {

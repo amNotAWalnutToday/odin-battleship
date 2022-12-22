@@ -18,6 +18,12 @@ const battleShips = (() => {
     const gameBoard = (grid) => {
         //board objects
         const ships = [];
+        const unplacedShips = [
+            {name: 'carrier', length: 5, number: 1},
+            {name: 'battleship', length: 4, number: 1},
+            {name: 'submarine', length: 3, number: 4},
+            {name: 'patrol boat', length: 2, number: 3}
+        ];
         const attackLog = [];
 
         const generateGrid = () => {
@@ -45,6 +51,19 @@ const battleShips = (() => {
             else return spots[0].hitHere = true;
         };
 
+        const removeShipfromStorage = (length) => {
+            switch(length){
+                case 5: unplacedShips[0].number--
+                    break;
+                case 4: unplacedShips[1].number--
+                    break; 
+                case 3: unplacedShips[2].number--
+                    break;
+                case 2: unplacedShips[3].number--
+                    break;
+            }
+        };
+
         const checkGridForShip = (coords) => {
             const spots = grid.filter(coord => {
                 if(coord.shipHere && coord.coordinate === coords ) return coord;
@@ -59,6 +78,15 @@ const battleShips = (() => {
             });
             if(spots.length < 1 || !spots) return false;
             return spots[0].hitHere;
+        };
+
+        const checkStorageForShip = (length) => {
+            const availableShip = []
+            unplacedShips.forEach(ship => {
+                if(length === ship.length && ship.number > 0) availableShip.push(ship);
+            });
+            if(availableShip.length > 0) return true;
+            else return false;
         };
 
         const getDirections = (length, x, y, direction, newCoords = []) => {
@@ -94,6 +122,7 @@ const battleShips = (() => {
         };
 
         const placeShip = (length, coords, direction) => {
+            if(!checkStorageForShip(length)) return; //TBA
             const [x, y] = [Number(coords[1]), Number(coords[3])];
             const con =
             (x + length >= 11 && direction === 'horizontal')
@@ -105,6 +134,7 @@ const battleShips = (() => {
             if (newCoords === 'error') return 'error';
             const newShip = ship(newCoords, length, 0, false);
 
+            removeShipfromStorage(length);
             ships.push(newShip);
             return newShip;
         };
@@ -129,7 +159,7 @@ const battleShips = (() => {
         const lose = () => {
             const comparison = [];
             ships.forEach(ship => {
-                if(ship.sunk) comparison.push(ship);//change
+                if(ship.sunk) comparison.push(ship);
             });
             return comparison.length >= ships.length;
         }
@@ -138,10 +168,12 @@ const battleShips = (() => {
             grid,
             placeShip,
             ships,
+            unplacedShips,
             attackLog,
             checkGridForShip,
             checkGridForHit,
             receiveAttack,
+            //remove below
             lose,
         };
     };
