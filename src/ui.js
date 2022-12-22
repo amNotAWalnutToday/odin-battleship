@@ -172,16 +172,13 @@ const userInterface = (() => {
         };
 
         const openPlaceShipMenu = () => {
-            const btnContainer = document.querySelector('#ship-menu');
+            // buttons //
             const carrier = document.createElement('button');
             carrier.setAttribute('id', 'carrier');
             carrier.textContent = 'carrier';
             const battleship = document.createElement('button');
             battleship.setAttribute('id', 'battleship');
             battleship.textContent = 'battleship';
-            const cruiser = document.createElement('button');
-            cruiser.setAttribute('id', 'cruiser');
-            cruiser.textContent = 'cruiser';
             const submarine = document.createElement('button');
             submarine.setAttribute('id', 'submarine');
             submarine.textContent = 'submarine';
@@ -191,8 +188,12 @@ const userInterface = (() => {
             const rotate = document.createElement('button');
             rotate.setAttribute('id', 'rotate-ship');
             rotate.textContent = '↷ Rotate Ship ↷';
-            btnContainer.append(carrier, battleship, cruiser, submarine, patrolBoat, rotate);
-
+            
+            // container //
+            const btnContainer = document.querySelector('#ship-menu');
+            btnContainer.append(carrier, battleship, submarine, patrolBoat, rotate);
+            
+            // events //
             addShipButtonEvents();
             addClosePlaceShipEvent();
         };
@@ -247,8 +248,6 @@ const userInterface = (() => {
                 .addEventListener('click', () => placeShipType(5));
             document.querySelector('#battleship')
                 .addEventListener('click', () => placeShipType(4));
-            document.querySelector('#cruiser')
-                .addEventListener('click', () => placeShipType(3));
             document.querySelector('#submarine')
                 .addEventListener('click', () => placeShipType(3));
             document.querySelector('#patrol-boat')
