@@ -123,7 +123,6 @@ const userInterface = (() => {
             gridSquares.forEach(square => {
                 const coords = square.id.replace(/grid-\w-/i, '');
                 const newCoords = `[${coords}]`;
-                console.log(newCoords);
                 for(let i = 0; i < marked.length; i++){
                     if(marked[i] === newCoords){
                         square.classList.add('grid-ship');
@@ -170,7 +169,7 @@ const userInterface = (() => {
             placeShipBtn.setAttribute('id', 'place-ship');
             container.appendChild(btnContainer);
             btnContainer.appendChild(placeShipBtn);
-        }
+        };
 
         const openPlaceShipMenu = () => {
             const btnContainer = document.querySelector('#ship-menu');
@@ -178,18 +177,22 @@ const userInterface = (() => {
             carrier.setAttribute('id', 'carrier');
             carrier.textContent = 'carrier';
             const battleship = document.createElement('button');
+            battleship.setAttribute('id', 'battleship');
             battleship.textContent = 'battleship';
             const cruiser = document.createElement('button');
-            cruiser.textContent = 'cruiser'
+            cruiser.setAttribute('id', 'cruiser');
+            cruiser.textContent = 'cruiser';
             const submarine = document.createElement('button');
+            submarine.setAttribute('id', 'submarine');
             submarine.textContent = 'submarine';
             const patrolBoat = document.createElement('button');
+            patrolBoat.setAttribute('id', 'patrol-boat');
             patrolBoat.textContent = 'patrol boat';
             btnContainer.append(carrier, battleship, cruiser, submarine, patrolBoat);
             
             addShipButtonEvents();
             addClosePlaceShipEvent();
-        }
+        };
 
         const closePlaceShipMenu = () => {
             const btnContainer = document.querySelector('#ship-menu');
@@ -199,39 +202,47 @@ const userInterface = (() => {
             }
 
             addOpenPlaceShipEvent();
-        }
+        };
 
         const addOpenPlaceShipEvent = () => {
             document.querySelector('#place-ship')
                 .addEventListener('click', openPlaceShipMenu);
             document.querySelector('#place-ship')
                 .removeEventListener('click', closePlaceShipMenu);
-        }
+        };
 
         const addClosePlaceShipEvent = () => {
             document.querySelector('#place-ship')
                 .addEventListener('click', closePlaceShipMenu);
             document.querySelector('#place-ship')
                 .removeEventListener('click', openPlaceShipMenu);
-        }
+        };
 
-        const placeCarrier = () => {
-            if(pointer.isPlacing && pointer.length === 5){
+        const placeShipType = (length) => {
+            if(pointer.isPlacing && pointer.length === length){
                 pointer.isPlacing = false;
                 pointer.length = 0;
                 pointer.direction = '';
             }else{
                 pointer.isPlacing = true;
-                pointer.length = 5;
+                pointer.length = length;
                 pointer.direction = 'horizontal';
             }
             console.log(pointer);
-        }
+        };
 
         const addShipButtonEvents = () => {
             document.querySelector('#carrier')
-                .addEventListener('click', placeCarrier);
-        }
+                .addEventListener('click', () => placeShipType(5));
+            document.querySelector('#battleship')
+                .addEventListener('click', () => placeShipType(4));
+            document.querySelector('#cruiser')
+                .addEventListener('click', () => placeShipType(3));
+            document.querySelector('#submarine')
+                .addEventListener('click', () => placeShipType(3));
+            document.querySelector('#patrol-boat')
+                .addEventListener('click', () => placeShipType(2));
+        };
 
         // end of place ship buttons //
         const loadGameScreen = () => {
@@ -245,7 +256,7 @@ const userInterface = (() => {
             addGridEvents(battleShips.player1, battleShips.board1);
         };
 
-        return { loadGameScreen, }
+        return { loadGameScreen, };
     };
     
     return {
