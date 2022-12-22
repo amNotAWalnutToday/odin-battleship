@@ -188,8 +188,11 @@ const userInterface = (() => {
             const patrolBoat = document.createElement('button');
             patrolBoat.setAttribute('id', 'patrol-boat');
             patrolBoat.textContent = 'patrol boat';
-            btnContainer.append(carrier, battleship, cruiser, submarine, patrolBoat);
-            
+            const rotate = document.createElement('button');
+            rotate.setAttribute('id', 'rotate-ship');
+            rotate.textContent = '↷ Rotate Ship ↷';
+            btnContainer.append(carrier, battleship, cruiser, submarine, patrolBoat, rotate);
+
             addShipButtonEvents();
             addClosePlaceShipEvent();
         };
@@ -231,6 +234,14 @@ const userInterface = (() => {
             console.log(pointer);
         };
 
+        const rotateShip = () => {
+            pointer.isPlacing
+                ? pointer.direction === 'horizontal'
+                    ? pointer.direction = 'vertical'
+                    : pointer.direction = 'horizontal'
+                : 'nothing to rotate';
+        };
+
         const addShipButtonEvents = () => {
             document.querySelector('#carrier')
                 .addEventListener('click', () => placeShipType(5));
@@ -242,6 +253,8 @@ const userInterface = (() => {
                 .addEventListener('click', () => placeShipType(3));
             document.querySelector('#patrol-boat')
                 .addEventListener('click', () => placeShipType(2));
+            document.querySelector('#rotate-ship')
+                .addEventListener('click', rotateShip);
         };
 
         // end of place ship buttons //
