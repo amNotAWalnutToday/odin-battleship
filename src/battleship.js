@@ -79,7 +79,7 @@ const battleShips = (() => {
             for(let i = 0; i < length; i++) {
                 const horizontal = `[${x+i},${y}]`;
                 const vertical = `[${x},${y+i}]`;
-                
+
                 if(direction === 'horizontal') {
                     if(checkH) return 'error';
                     setBoard(horizontal, 'shipHere');
@@ -96,9 +96,9 @@ const battleShips = (() => {
         const placeShip = (length, coords, direction) => {
             const [x, y] = [Number(coords[1]), Number(coords[3])];
             const con =
-            (x + length >= 10 && direction === 'horizontal')
+            (x + length >= 11 && direction === 'horizontal')
             || 
-            (y + length >= 10 && direction === 'vertical');
+            (y + length >= 11 && direction === 'vertical');
             if(con) return 'error';
 
             const newCoords = getDirections(length, x, y, direction);
