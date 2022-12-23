@@ -69,8 +69,9 @@ const userInterface = (() => {
             if(con === 0 && ships.length > 0){
                 pointer.phase = 'attack';
                 pointer.player = 2;
-                changeGrid(player2, board2, true);
-                pointer.phase = 'place';
+                setAnnouncement('Player 2 Placing Phase');
+                setTimeout(() => changeGrid(player2, board2, true), 1000);
+                setTimeout(() => pointer.phase = 'place', 1001);
                 setGridTitle(player2);
             }
             endPlacing();
@@ -89,7 +90,9 @@ const userInterface = (() => {
             if(con === 0 && ships.length > 0){
                 pointer.phase = 'attack';
                 pointer.player = 1;
-                changeGrid(player2, board2, true);
+                setAnnouncement('Attack Phase');
+                setTimeout(() => setAnnouncement('Player 1 Turn'), 1000);
+                setTimeout(() => changeGrid(player2, board2, true), 2000);
             }
         }
 
@@ -100,6 +103,7 @@ const userInterface = (() => {
                 changeGrid(player1, board1);
             }
             setTurnStatus();
+            setAnnouncement('', true);
         }
         // end of game controller //
 
@@ -115,21 +119,43 @@ const userInterface = (() => {
             container.appendChild(player2Btn);
 
             const title = document.createElement('h1');
+            title.setAttribute('id', 'grid-title');
             title.textContent = `Player[], []Phase`;
             container.appendChild(title);
             setGridTitle(player1);
+        };
 
+        const addStatus = () => {
             const status = document.createElement('h2');
             status.textContent = 'player[]';
             container.appendChild(status);
-        };
+        }
 
         const setTurnStatus = () => {
             let turn = 0;
             if(player1.isTurn)turn = 1;
             else if(player2.isTurn) turn = 2;
             document.querySelector('h2').textContent = `Turn to attack: player${turn}`
-        }
+        };
+
+        const addAnnouncement = () => {
+            const announcementBox = document.createElement('div');
+            announcementBox.setAttribute('id', 'announcement');
+            announcementBox.classList.add('hide');
+            const status = document.createElement('h1');
+            status.setAttribute('id', 'announcement-text');
+            document.body.appendChild(announcementBox);
+            announcementBox.appendChild(status);
+        };
+
+        const setAnnouncement = (text, remove = false) => {
+            const box = document.querySelector('#announcement');
+            const status = document.querySelector('#announcement-text');
+            box.classList.remove('hide');
+            !remove
+                ? status.textContent = text
+                : status.textContent = box.classList.add('hide');
+        };
 
         const addIconEvents = () => {
             document.querySelector('#player-1')
@@ -146,7 +172,7 @@ const userInterface = (() => {
         // grid display //
         // grid title //
         const setGridTitle = (player) => {
-            const title = document.querySelector('h1');
+            const title = document.querySelector('#grid-title');
             title.textContent = `player: ${player.playerNumber}, phase: ${pointer.phase}`;
         }
         // end of grid title //
@@ -212,12 +238,16 @@ const userInterface = (() => {
                 Number(coords[4]),
             ];
             if(playerNumber === 2 && player1.isTurn){
-                player1.takeTurn(`[${x},${y}]`, board, player1, player2);
+                player1.takeTurn(`[${x},${y}]`, board, player1, player2, board1);
+                markGrid(playerNumber, board, true);
+                setAnnouncement('Player 2 Turn Begin');
+                setTimeout(endTurn, 3000);
             }else if(playerNumber === 1 && player2.isTurn){
-                player2.takeTurn(`[${x},${y}]`, board, player2, player1);
+                player2.takeTurn(`[${x},${y}]`, board, player2, player1, board2);
+                markGrid(playerNumber, board, true);
+                setAnnouncement('Player 1 Turn Begin');
+                setTimeout(endTurn, 3000);
             }
-            markGrid(playerNumber, board, true);
-            endTurn();
         };
 
         const markGridToShip = (playerNumber, board) => {
@@ -302,6 +332,7 @@ const userInterface = (() => {
             addGridEvents(player, board);
             pointer.player = player.playerNumber;        
 
+            setAnnouncement('', true);
             closePlaceShipMenu();
             openPlaceShipMenu();
         };
@@ -462,13 +493,16 @@ const userInterface = (() => {
             addPlayerIcons();
             addGrid();
             addIconEvents();
+            addStatus();
             addPlaceShipButton();
             addOpenPlaceShipEvent();
             setGridToPlayer(player1, board1);
             addGridEvents(player1, board1);
-
+            addAnnouncement();
+            setAnnouncement('Player 1 Placing Phase')
+            setTimeout(() => setAnnouncement('', true), 1000);
             setTurnStatus();
-            
+
             placeAllShips(board1); // delete
             placeAllShips(board2); //delete
         };
@@ -499,5 +533,5 @@ const userInterface = (() => {
 
 export default userInterface;
 
-// next step => add logic to display hits on the board;
-// next step => add logic to switch board after hit has been taken;
+// next step => make announcements for every turn phase  
+// next step => make game over announcement

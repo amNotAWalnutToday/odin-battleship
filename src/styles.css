@@ -13,6 +13,11 @@
     box-sizing: border-box;
 }
 
+.gameScreen {
+    width: 100vw;
+    height: 100vh;
+}
+
 #grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, max(30px, 4vw));
@@ -21,6 +26,25 @@
     width: max(300px, 40vw);
     height: max(300px, 40vw);
     box-shadow: 0px 0px 0px 5px var(--outline-color);
+    transform: rotate(270deg);
+}
+
+#announcement {
+    position: absolute;
+    top: max(300px, 40vh);
+    left: 50%;
+    margin-left: -30%;
+    padding-top: 3vh;
+    height: 10vh;
+    width: 60%;
+    text-align: center;
+    background-color: grey;
+    z-index: 1;
+}
+
+h1,
+h2 {
+    text-align: center;
 }
 
 .p1,
@@ -34,4 +58,20 @@
 
 .p2 {
     background-color: var(--grid2);
+}
+
+.grid-ship {
+    background-color: brown;
+}
+
+.grid-hit {
+    background-color: olive !important; 
+}
+
+.grid-miss {
+    background-color: rgb(255, 136, 136);
+}
+
+.hide {
+    display: none;
 }
