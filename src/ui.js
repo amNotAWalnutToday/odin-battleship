@@ -189,8 +189,22 @@ const userInterface = (() => {
             changeWhoPlacing();
             //carrier
             console.log(e.target);
-            console.log(board);
-            
+            console.log(board);  
+        };
+
+        const attackGrid = (e, board) => {
+            const coords = e.target.id.replace(/grid-/i, '');
+            const [playerNumber, x, y] = [
+                Number(coords[0]),
+                Number(coords[2]),
+                Number(coords[4]),
+            ];
+            if(playerNumber === 2 && player1.isTurn){
+                player1.takeTurn(`[${x},${y}]`, board, player1, player2);
+            }else if(playerNumber === 1 && player2.isTurn){
+                player2.takeTurn(`[${x},${y}]`, board, player2, player1);
+            }
+            setTurnStatus();
         };
 
         const markGridToShip = (playerNumber, board) => {
@@ -234,9 +248,12 @@ const userInterface = (() => {
         };
 
         const chooseGridFunction = (e, board) => {
-            if(pointer.isPlacing){
+            if(pointer.phase === 'attack'){
+                attackGrid(e, board);
+                console.log(e.target.id, board);
+            } else if(pointer.isPlacing){
                 setGridToShip(e, board);
-            } 
+            }
         };
 
         const addGridEvents = (player, board) => {
@@ -406,4 +423,4 @@ const userInterface = (() => {
 export default userInterface;
 
 // next step => add logic to display hits on the board;
-// next step => add function for player to attack enemy board; 
+// next step => add logic to switch board after hit has been taken;
