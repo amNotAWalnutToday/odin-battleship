@@ -25,15 +25,18 @@ describe('board w/o ships', () => {
     });
 
     test('board recognizes that it has been hit', () => {
+        player1Board.placePhase[0] = false;
         expect(player1Board.receiveAttack('[8,8]')).toMatch('miss');
     });
 
     test('board logs attacks', () => {
+        player1Board.placePhase[0] = false;
         player1Board.receiveAttack('[4,4]');
         expect(player1Board.attackLog).toContain('[4,4]');
     });
 
     test('board cannot hit same target multiple times', () => {
+        player1Board.placePhase[0] = false;
         expect(player1Board.receiveAttack('[8,8]')).toBeFalsy();
     });
 });
@@ -45,10 +48,12 @@ describe('board w/ ships' ,() => {
     beforeEach(() => {
         testBoard = battleShips.gameBoard();  
         testBoard.placeShip(4 ,'[0,0]', 'horizontal');
+        testBoard.placePhase[0] = false;
         testBoard.receiveAttack('[1,0]');
         testBoard.receiveAttack('[2,0]');
         testBoard.receiveAttack('[3,0]');
         testBoard.receiveAttack('[4,0]');
+        testBoard.placePhase[0] = true;
     });
     
     test('board recognizes ships are at specified coordinates', () => {
@@ -60,6 +65,7 @@ describe('board w/ ships' ,() => {
     });
 
     test('board recognizes that a ship has been hit', () => {
+        testBoard.placePhase[0] = false;
         expect(testBoard.receiveAttack('[0,0]')).toMatch('hit');
     });
 
@@ -68,6 +74,7 @@ describe('board w/ ships' ,() => {
     });
 
     test('ship gets destroyed when damage exceeds length', () => {
+        testBoard.placePhase[0] = false;
         testBoard.receiveAttack('[0,0]')
         expect(testBoard.ships[0].sunk).toBe(true);
     });
@@ -82,6 +89,17 @@ describe('ship placing limits', () => {
     let testBoard = battleShips.gameBoard();
     let testPlayer = battleShips.player(1, false);
     let testAi = battleShips.player(2, true);
+    const placeAllShips = () => {
+        testBoard.placeShip(5, '[0,1]', 'horizontal');
+        testBoard.placeShip(4, '[0,2]', 'horizontal');
+        testBoard.placeShip(3, '[0,3]', 'horizontal');
+        testBoard.placeShip(3, '[0,4]', 'horizontal');
+        testBoard.placeShip(3, '[0,5]', 'horizontal');
+        testBoard.placeShip(3, '[0,6]', 'horizontal');
+        testBoard.placeShip(2, '[0,7]', 'horizontal');
+        testBoard.placeShip(2, '[0,8]', 'horizontal');
+        testBoard.placeShip(2, '[0,9]', 'horizontal');
+    };
     
     beforeEach(() => {
         testBoard = battleShips.gameBoard();
@@ -104,16 +122,6 @@ describe('ship placing limits', () => {
     });
 
     test('all ships can be removed from storage', () => {
-        testBoard.placeShip(5, '[0,1]', 'horizontal');
-        testBoard.placeShip(4, '[0,2]', 'horizontal');
-        testBoard.placeShip(3, '[0,3]', 'horizontal');
-        testBoard.placeShip(3, '[0,4]', 'horizontal');
-        testBoard.placeShip(3, '[0,5]', 'horizontal');
-        testBoard.placeShip(3, '[0,6]', 'horizontal');
-        testBoard.placeShip(2, '[0,7]', 'horizontal');
-        testBoard.placeShip(2, '[0,8]', 'horizontal');
-        testBoard.placeShip(2, '[0,9]', 'horizontal');
-
         const totalShipsInStorage = () => {
             const shipNumbers = [
                 testBoard.unplacedShips[0].number,
@@ -127,12 +135,29 @@ describe('ship placing limits', () => {
             }, 0);
         };
 
+        placeAllShips();
         expect(totalShipsInStorage()).toBe(0);
     });
 
     test('can only place specified number(1) of carriers', () => {
         testBoard.placeShip(5, '[0,1]', 'horizontal')
         expect(testBoard.placeShip(5, '[0,0]', 'horizontal')).toBeFalsy();
+    });
+
+    test('placing phase ends when all ships are placed', () => {
+        placeAllShips();
+        expect(testBoard.receiveAttack('[0,0]')).toBeTruthy();
+    });
+
+    test('cannot place ships after placing phase is over', () => {
+        placeAllShips();
+        testBoard.unplacedShips[0].number += 1;
+        expect(testBoard.placeShip(5, '[0,0]', 'horizontal')).toBeFalsy();
+    });
+
+    test('board cannot receive attacks during placing phase', () => {
+        testBoard.placeShip(5, '[0,0]', 'vertical');
+        expect(testBoard.receiveAttack('[0,0]')).toBeFalsy();
     });
 });
 
@@ -141,6 +166,9 @@ describe('player functions', () => {
     const player2 = battleShips.player(2);
     const newBoard = battleShips.gameBoard();
     newBoard.placeShip(2,'[7,7]','horizontal');
+    beforeEach(() => {
+        newBoard.placePhase[0] = false;
+    });
 
     test('player 1 should take there turn first', () => {
         expect(player1.isTurn).toBe(true);
@@ -188,6 +216,7 @@ describe('Ai logic', () => {
         testPlayer = battleShips.player(1, false);
         testAi = battleShips.player(2, true);
         testBoard.placeShip(2,'[7,7]','horizontal');
+        testBoard.placePhase[0] = false;
     });
 
     test('ai can take turn', () => {

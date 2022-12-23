@@ -25,6 +25,7 @@ const battleShips = (() => {
             {name: 'patrol boat', length: 2, number: 3}
         ];
         const attackLog = [];
+        const placePhase = [true];
 
         const generateGrid = () => {
             const gridMap = [];
@@ -63,7 +64,7 @@ const battleShips = (() => {
                     break;
             }
         };
-
+        // grid iterators //
         const checkGridForShip = (coords) => {
             const spots = grid.filter(coord => {
                 if(coord.shipHere && coord.coordinate === coords ) return coord;
@@ -121,8 +122,26 @@ const battleShips = (() => {
             return newCoords;
         };
 
+        // game functions //
+        const changePhase = () => {
+            let end = false;
+            const totalShipsInStorage = [
+                checkStorageForShip(5),
+                checkStorageForShip(4),
+                checkStorageForShip(3),
+                checkStorageForShip(2)
+            ];
+
+            if(totalShipsInStorage.every(ship => !ship)) end = true;
+            if(end){    
+                placePhase[0] = false;
+                return 'end of place phase';
+            }
+            return 'continue placing';
+        };
+
         const placeShip = (length, coords, direction) => {
-            if(!checkStorageForShip(length)) return; //TBA
+            if(!checkStorageForShip(length) || !placePhase[0]) return; //TBA
             const [x, y] = [Number(coords[1]), Number(coords[3])];
             const con =
             (x + length >= 11 && direction === 'horizontal')
@@ -135,13 +154,14 @@ const battleShips = (() => {
             const newShip = ship(newCoords, length, 0, false);
 
             removeShipfromStorage(length);
+            changePhase();
             ships.push(newShip);
             return newShip;
         };
 
         const receiveAttack = (coords) => {
             if(lose()) return 'game over';
-            if(checkGridForHit(coords)) return;
+            if(checkGridForHit(coords) || placePhase[0]) return;
             setBoard(coords, 'hitHere');      
             attackLog.push(coords);
             if (!checkGridForShip(coords)) return 'miss';
@@ -174,6 +194,7 @@ const battleShips = (() => {
             checkGridForHit,
             receiveAttack,
             //remove below
+            placePhase,
             lose,
         };
     };
@@ -197,7 +218,7 @@ const battleShips = (() => {
         }
 
         const aiTakesTurn = (board, user, target) => {
-            const [x, y] = [Math.floor(Math.random() * 9), Math.floor(Math.random() * 9)];
+            const [x, y] = [Math.floor(Math.random() * 9.9), Math.floor(Math.random() * 9.9)];
             const coords = `[${x},${y}]`;
             const results = takeTurn(coords, board, user, target);
             if(!results) return aiTakesTurn(board,user,target)
