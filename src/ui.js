@@ -68,8 +68,8 @@ const userInterface = (() => {
 
             if(con === 0 && ships.length > 0){
                 pointer.phase = 'attack';
-                pointer.player === 2;
-                changeGrid(player2, board2);
+                pointer.player = 2;
+                changeGrid(player2, board2, true);
                 pointer.phase = 'place';
                 setGridTitle(player2);
             }
@@ -88,8 +88,8 @@ const userInterface = (() => {
             
             if(con === 0 && ships.length > 0){
                 pointer.phase = 'attack';
-                pointer.player === 1;
-                changeGrid(player1, board1);
+                pointer.player = 1;
+                changeGrid(player2, board2, true);
             }
         }
         // end of game controller //
@@ -161,10 +161,18 @@ const userInterface = (() => {
                 btn.classList.add(`p${playerNumber}`); 
                 grid.appendChild(btn);
             });
-            markGridToShip(player.playerNumber, board);
+            if(!player1.isTurn && pointer.player === 1){
+                markGridToShip(playerNumber, board);
+            }
+            if(!player2.isTurn && pointer.player === 2){
+                markGridToShip(playerNumber, board);
+            }else if(pointer.phase === 'place') {
+                markGridToShip(playerNumber, board);
+            }
         };
 
         const setGridToShip = (e, board) => {
+            if(pointer.phase != 'place') return;
             const coords = e.target.id.replace(/grid-/i, '');
             const [playerNumber, x, y] = [
                 Number(coords[0]),
@@ -174,6 +182,7 @@ const userInterface = (() => {
 
             board.placeShip(pointer.length, `[${x},${y}]`, pointer.direction);
             markGridToShip(playerNumber, board);
+
             closePlaceShipMenu();
             openPlaceShipMenu();
 
@@ -202,8 +211,6 @@ const userInterface = (() => {
                     }
                 }
             });
-
-            console.log(marked);
         };
 
         const removeGrid = () => {
@@ -213,13 +220,17 @@ const userInterface = (() => {
             }
         };
 
-        const changeGrid = (player, board) => {
+        const changeGrid = (player, board, bypass = false) => {
             if(pointer.phase === 'place') return;
+            if(pointer.player === player.playerNumber && !bypass) return;
             removeGrid();
             setGridTitle(player);
             setGridToPlayer(player, board);
             addGridEvents(player, board);
-            pointer.player = player.playerNumber;
+            pointer.player = player.playerNumber;        
+
+            closePlaceShipMenu();
+            openPlaceShipMenu();
         };
 
         const chooseGridFunction = (e, board) => {
@@ -394,4 +405,5 @@ const userInterface = (() => {
 
 export default userInterface;
 
-// next step => add titles to placing phase & which grid is which player;
+// next step => add logic to display hits on the board;
+// next step => add function for player to attack enemy board; 
