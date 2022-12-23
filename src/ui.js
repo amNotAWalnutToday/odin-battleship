@@ -161,13 +161,16 @@ const userInterface = (() => {
                 btn.classList.add(`p${playerNumber}`); 
                 grid.appendChild(btn);
             });
+
             if(!player1.isTurn && pointer.player === 1){
-                markGridToShip(playerNumber, board);
+                markGrid(playerNumber, board, false);
             }
             if(!player2.isTurn && pointer.player === 2){
-                markGridToShip(playerNumber, board);
+                markGrid(playerNumber, board, false);
             }else if(pointer.phase === 'place') {
-                markGridToShip(playerNumber, board);
+                markGrid(playerNumber, board, false);
+            }else {
+                markGrid(playerNumber, board, true);
             }
         };
 
@@ -205,6 +208,7 @@ const userInterface = (() => {
                 player2.takeTurn(`[${x},${y}]`, board, player2, player1);
             }
             setTurnStatus();
+            markGrid(playerNumber, board, true);
         };
 
         const markGridToShip = (playerNumber, board) => {
@@ -225,6 +229,52 @@ const userInterface = (() => {
                     }
                 }
             });
+        };
+
+        const markGridToHit = (playerNumber, board) => {
+            const gridSquares = document.querySelectorAll(`.p${playerNumber}`);
+            const coords = board.grid;
+            const marked = [];
+
+            coords.forEach(coord => {
+                if(coord.hitHere && coord.shipHere) marked.push(coord.coordinate);
+            });
+
+            gridSquares.forEach(square => {
+                const coords = square.id.replace(/grid-\w-/i, '');
+                const newCoords = `[${coords}]`;
+                for(let i = 0; i < marked.length; i++){
+                    if(marked[i] === newCoords){
+                        square.classList.add('grid-hit');
+                    }
+                }
+            });
+        };
+
+        const markGridToMiss = (playerNumber, board) => {
+            const gridSquares = document.querySelectorAll(`.p${playerNumber}`);
+            const coords = board.grid;
+            const marked = [];
+
+            coords.forEach(coord => {
+                if(coord.hitHere && !coord.shipHere) marked.push(coord.coordinate);
+            });
+
+            gridSquares.forEach(square => {
+                const coords = square.id.replace(/grid-\w-/i, '');
+                const newCoords = `[${coords}]`;
+                for(let i = 0; i < marked.length; i++){
+                    if(marked[i] === newCoords){
+                        square.classList.add('grid-miss');
+                    }
+                }
+            });
+        };
+
+        const markGrid = (playerNumber, board, hideShips) => {
+            if(!hideShips) markGridToShip(playerNumber, board);
+            markGridToHit(playerNumber, board);
+            markGridToMiss(playerNumber, board);
         };
 
         const removeGrid = () => {
