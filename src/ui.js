@@ -92,6 +92,15 @@ const userInterface = (() => {
                 changeGrid(player2, board2, true);
             }
         }
+
+        const endTurn = () => {
+            if(player1.isTurn){
+                changeGrid(player2, board2);
+            }else if (player2.isTurn){
+                changeGrid(player1, board1);
+            }
+            setTurnStatus();
+        }
         // end of game controller //
 
         // player status //
@@ -207,8 +216,8 @@ const userInterface = (() => {
             }else if(playerNumber === 1 && player2.isTurn){
                 player2.takeTurn(`[${x},${y}]`, board, player2, player1);
             }
-            setTurnStatus();
             markGrid(playerNumber, board, true);
+            endTurn();
         };
 
         const markGridToShip = (playerNumber, board) => {
@@ -459,7 +468,25 @@ const userInterface = (() => {
             addGridEvents(player1, board1);
 
             setTurnStatus();
+            
+            placeAllShips(board1); // delete
+            placeAllShips(board2); //delete
         };
+
+        //////////////////
+        // remove below //
+        /////////////////
+        const placeAllShips = (board) => {
+            board.placeShip(5, '[0,1]', 'horizontal');
+            board.placeShip(4, '[0,2]', 'horizontal');
+            board.placeShip(3, '[0,3]', 'horizontal');
+            board.placeShip(3, '[0,4]', 'horizontal');
+            board.placeShip(3, '[0,5]', 'horizontal');
+            board.placeShip(3, '[0,6]', 'horizontal');
+            board.placeShip(2, '[0,7]', 'horizontal');
+            board.placeShip(2, '[0,8]', 'horizontal');
+        };
+        
 
         return { loadGameScreen, };
     };
