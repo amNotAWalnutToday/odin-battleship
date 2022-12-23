@@ -37,19 +37,64 @@ const userInterface = (() => {
     };
 
     const gameScreen = () => {
+        const player1 = battleShips.player(1, false);
+        const player2 = battleShips.player(2, false);
+        const board1 = battleShips.gameBoard();
+        const board2 = battleShips.gameBoard();
+
         const container = document.querySelector('#container');
         const pointer = {
             player: 1,
             isPlacing: false,
             length: 0,
             direction: '',
+            phase: 'place' // or attack
         };
 
         const setContainer = () => {
             container.setAttribute('class','gameScreen');
         };
 
-        // player icon buttons //
+        // game controller //
+        const changeWhoPlacing = () => {
+            const ships = []
+            if(pointer.player === 1){    
+                board1.unplacedShips.forEach(ship => ships.push(ship.number));
+            }
+
+            const con = ships.reduce((current, total) => {
+                return total += current;
+            }, 0);
+
+            if(con === 0 && ships.length > 0){
+                pointer.phase = 'attack';
+                pointer.player === 2;
+                changeGrid(player2, board2);
+                pointer.phase = 'place';
+                setGridTitle(player2);
+            }
+            endPlacing();
+        }
+
+        const endPlacing = () => {
+            const ships = []
+            if(pointer.player === 2){
+                board2.unplacedShips.forEach(ship => ships.push(ship.number));
+            }
+
+            const con = ships.reduce((current, total) => {
+                return total += current;
+            }, 0);
+            
+            if(con === 0 && ships.length > 0){
+                pointer.phase = 'attack';
+                pointer.player === 1;
+                changeGrid(player1, board1);
+            }
+        }
+        // end of game controller //
+
+        // player status //
         const addPlayerIcons = () => {
             const player1Btn = document.createElement('button');
             const player2Btn = document.createElement('button');
@@ -59,21 +104,46 @@ const userInterface = (() => {
             player2Btn.textContent = 'Player 2';
             container.appendChild(player1Btn);
             container.appendChild(player2Btn);
+
+            const title = document.createElement('h1');
+            title.textContent = `Player[], []Phase`;
+            container.appendChild(title);
+            setGridTitle(player1);
+
+            const status = document.createElement('h2');
+            status.textContent = 'player[]';
+            container.appendChild(status);
         };
+
+        const setTurnStatus = () => {
+            let turn = 0;
+            if(player1.isTurn)turn = 1;
+            else if(player2.isTurn) turn = 2;
+            document.querySelector('h2').textContent = `Turn to attack: player${turn}`
+        }
 
         const addIconEvents = () => {
             document.querySelector('#player-1')
                 .addEventListener('click', () => {
-                    changeGrid(battleShips.player1, battleShips.board1);
+                    changeGrid(player1, board1);
                 });
             document.querySelector('#player-2')
                 .addEventListener('click', () => {
-                    changeGrid(battleShips.player2, battleShips.board2);
+                    changeGrid(player2, board2);
                 });
         };
-        // end of player icon buttons //
+        // end of player status //
 
         // grid display //
+        // grid title //
+        const setGridTitle = (player) => {
+            const title = document.querySelector('h1');
+            title.textContent = `player: ${player.playerNumber}, phase: ${pointer.phase}`;
+        }
+        // end of grid title //
+
+        // grid //
+
         const addGrid = () => {
             const grid = document.createElement('div');
             grid.setAttribute('id', 'grid');
@@ -104,8 +174,11 @@ const userInterface = (() => {
 
             board.placeShip(pointer.length, `[${x},${y}]`, pointer.direction);
             markGridToShip(playerNumber, board);
+            closePlaceShipMenu();
+            openPlaceShipMenu();
+
+            changeWhoPlacing();
             //carrier
-            
             console.log(e.target);
             console.log(board);
             
@@ -141,9 +214,12 @@ const userInterface = (() => {
         };
 
         const changeGrid = (player, board) => {
+            if(pointer.phase === 'place') return;
             removeGrid();
+            setGridTitle(player);
             setGridToPlayer(player, board);
             addGridEvents(player, board);
+            pointer.player = player.playerNumber;
         };
 
         const chooseGridFunction = (e, board) => {
@@ -158,6 +234,7 @@ const userInterface = (() => {
                 btn.addEventListener('click', e => chooseGridFunction(e, board));
             });
         };
+        // end of grid //
         // end of grid display //
         
         // place ship buttons //
@@ -190,9 +267,17 @@ const userInterface = (() => {
             rotate.textContent = '↷ Rotate Ship ↷';
             
             // container //
+            const btnsToAppend = [
+                patrolBoat,
+                submarine,
+                battleship,
+                carrier,
+                rotate
+            ];
             const btnContainer = document.querySelector('#ship-menu');
-            btnContainer.append(carrier, battleship, submarine, patrolBoat, rotate);
+            btnContainer.append(...btnsToAppend);
             
+            hideShipBtns(...btnsToAppend);
             // events //
             addShipButtonEvents();
             addClosePlaceShipEvent();
@@ -216,7 +301,7 @@ const userInterface = (() => {
         };
 
         const addClosePlaceShipEvent = () => {
-            document.querySelector('#place-ship')
+            document.querySelector('#place-ship') 
                 .addEventListener('click', closePlaceShipMenu);
             document.querySelector('#place-ship')
                 .removeEventListener('click', openPlaceShipMenu);
@@ -256,7 +341,35 @@ const userInterface = (() => {
                 .addEventListener('click', rotateShip);
         };
 
+        const hideShipBtns = (patrolBoat, submarine, battleship, carrier) => {
+            if(pointer.player === 1 && board1.unplacedShips[0].number < 1){
+                carrier.classList.add('hide');
+            }
+            if(pointer.player === 1 && board1.unplacedShips[1].number < 1){
+                battleship.classList.add('hide');
+            }
+            if(pointer.player === 1 && board1.unplacedShips[2].number < 1){
+                submarine.classList.add('hide');
+            }
+            if(pointer.player === 1 && board1.unplacedShips[3].number < 1){
+                patrolBoat.classList.add('hide');
+            }
+            if(pointer.player === 2 && board2.unplacedShips[0].number < 1){
+                carrier.classList.add('hide');
+            }
+            if(pointer.player === 2 && board2.unplacedShips[1].number < 1){
+                battleship.classList.add('hide');
+            }
+            if(pointer.player === 2 && board2.unplacedShips[2].number < 1){
+                submarine.classList.add('hide');
+            }
+            if(pointer.player === 2 && board2.unplacedShips[3].number < 1){
+                patrolBoat.classList.add('hide');
+            }
+        };
+
         // end of place ship buttons //
+
         const loadGameScreen = () => {
             setContainer();
             addPlayerIcons();
@@ -264,8 +377,10 @@ const userInterface = (() => {
             addIconEvents();
             addPlaceShipButton();
             addOpenPlaceShipEvent();
-            setGridToPlayer(battleShips.player1, battleShips.board1);
-            addGridEvents(battleShips.player1, battleShips.board1);
+            setGridToPlayer(player1, board1);
+            addGridEvents(player1, board1);
+
+            setTurnStatus();
         };
 
         return { loadGameScreen, };
@@ -278,3 +393,5 @@ const userInterface = (() => {
 })();
 
 export default userInterface;
+
+// next step => add titles to placing phase & which grid is which player;
