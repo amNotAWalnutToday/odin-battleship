@@ -207,41 +207,31 @@ const battleShips = (() => {
 
         let isTurn = firstTurn(); 
 
-        const takeTurn = (coords, board, user, target) => {
+        const takeTurn = (coords, board, user, target, targetBoard) => {
             if(!user.isTurn || board.checkGridForHit(coords)) return;
             const results = board.receiveAttack(coords);
             if(results === 'game over') return 'game over';
             user.isTurn = false;
             target.isTurn = true;
-            if(target.isAi) aiTakesTurn(board, target, user);
+            if(target.isAi) aiTakesTurn(targetBoard, target, user, board);
             return `${results} at ${coords}`;
         }
 
-        const aiTakesTurn = (board, user, target) => {
+        const aiTakesTurn = (board, user, target, targetBoard) => {
             const [x, y] = [Math.floor(Math.random() * 9.9), Math.floor(Math.random() * 9.9)];
             const coords = `[${x},${y}]`;
-            const results = takeTurn(coords, board, user, target);
-            if(!results) return aiTakesTurn(board,user,target)
+            const results = takeTurn(coords, board, user, target, targetBoard);
+            if(!results) return aiTakesTurn(board,user,target, targetBoard)
             else return results;
         }
 
         return { playerNumber, takeTurn, aiTakesTurn, isTurn, isAi };
     }
 
-    const player1 = player(1, false);
-    const player2 = player(2, false);
-    const board1 = gameBoard();
-    const board2 = gameBoard();
-
     return {
         ship,
         gameBoard,
         player,
-        //^not need^;
-        player1,
-        player2,
-        board1,
-        board2,
     };
 })();
 

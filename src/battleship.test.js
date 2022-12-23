@@ -208,11 +208,13 @@ describe('player functions', () => {
 
 describe('Ai logic', () => {
     let testBoard = battleShips.gameBoard();
+    let otherTestBoard = battleShips.gameBoard();
     let testPlayer = battleShips.player(1, false);
     let testAi = battleShips.player(2, true);
     
     beforeEach(() => {
         testBoard = battleShips.gameBoard();
+        otherTestBoard = battleShips.gameBoard();
         testPlayer = battleShips.player(1, false);
         testAi = battleShips.player(2, true);
         testBoard.placeShip(2,'[7,7]','horizontal');
@@ -226,10 +228,9 @@ describe('Ai logic', () => {
         expect(testAi.aiTakesTurn(testBoard, testAi, testPlayer)).toBeTruthy();
     });
 
-    test('ai continues to take turns w/o human', () => {
-        testPlayer.takeTurn('[0,0]', testBoard, testPlayer, testAi);
-        console.log(testBoard.attackLog);
-        expect(testBoard.attackLog.length).toBeGreaterThan(1);
+    test('ai attacks a different board than player', () => {
+        testPlayer.takeTurn('[0,0]', testBoard, testPlayer, testAi, otherTestBoard);
+        expect(testBoard.attackLog.length).toBe(1);
     });
 
     test('ai rerolls attack if spot is already hit', () => {
@@ -237,7 +238,6 @@ describe('Ai logic', () => {
             const [x, y] = [0,0];
             const coords = `[${x},${y}]`;
             const results =  testAi.takeTurn(coords, board, user, target);
-            console.log(results);
             if(!results) user.aiTakesTurn(board,user,target);
             return results;
         }
