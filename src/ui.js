@@ -1,5 +1,6 @@
 import battleShips from "./battleship";
 import arrow from './img/arrow.png';
+import crosshair from './img/crosshairs-gps.png';
 
 const userInterface = (() => {
     const titleScreen = () => {
@@ -320,9 +321,6 @@ const userInterface = (() => {
             openPlaceShipMenu();
 
             changeWhoPlacing();
-            //carrier
-            console.log(e.target);
-            console.log(board);  
         };
 
         const attackGrid = (e, board) => {
@@ -371,6 +369,15 @@ const userInterface = (() => {
             });
         };
 
+        const markGridToHoverShip = (e) => {
+            if(pointer.phase != 'place' || pointer.length < 2) return markGridToHoverHit(e);
+            let textArrow;
+            pointer.direction === 'horizontal'
+                ? textArrow = `<img src="${arrow}" class="grid-right" />`
+                : textArrow = `<img src="${arrow}" class="grid-up" />`
+            e.target.innerHTML = textArrow;
+        };
+
         const markGridToHit = (playerNumber, board) => {
             const gridSquares = document.querySelectorAll(`.p${playerNumber}`);
             const coords = board.grid;
@@ -411,6 +418,11 @@ const userInterface = (() => {
             });
         };
 
+        const markGridToHoverHit = (e) => {
+            if(pointer.phase != 'attack') return;
+            e.target.innerHTML = `<img src="${crosshair}" class="grid-target" />`;
+        };
+
         const markGrid = (playerNumber, board, hideShips) => {
             if(!hideShips) markGridToShip(playerNumber, board);
             markGridToHit(playerNumber, board);
@@ -423,6 +435,12 @@ const userInterface = (() => {
                 grid.removeChild(grid.firstChild);
             }
         };
+
+        const removeHover = (e) => {
+            while(e.target.firstChild){
+                e.target.removeChild(e.target.firstChild);
+            }
+        }
 
         const changeGrid = (player, board, bypass = false) => {
             if(pointer.phase === 'place' && !bypass) return;
@@ -444,7 +462,6 @@ const userInterface = (() => {
         const chooseGridFunction = (e, board) => {
             if(pointer.phase === 'attack'){
                 attackGrid(e, board);
-                console.log(e.target.id, board);
             } else if(pointer.isPlacing){
                 setGridToShip(e, board);
             }
@@ -453,7 +470,11 @@ const userInterface = (() => {
         const addGridEvents = (player, board) => {
             const gridBtns = document.querySelectorAll(`.p${player.playerNumber}`)
             gridBtns.forEach(btn => {
-                btn.addEventListener('click', e => chooseGridFunction(e, board));
+                btn.addEventListener('mouseup', e => chooseGridFunction(e, board));
+                btn.addEventListener('mouseenter', e => markGridToHoverShip(e, board));
+                btn.addEventListener('touchstart', e => markGridToHoverShip(e, board));
+                btn.addEventListener('mouseleave', removeHover);
+                btn.addEventListener('touchend', removeHover);
             });
         };
         // end of grid //
@@ -538,7 +559,6 @@ const userInterface = (() => {
                 pointer.length = length;
             }
             setTurnStatus();
-            console.log(pointer);
         };
 
         const rotateShip = () => {
@@ -612,8 +632,6 @@ const userInterface = (() => {
             addAnnouncement();
             setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-            
-
 
             setTurnStatus();
         };
@@ -645,3 +663,4 @@ const userInterface = (() => {
 export default userInterface;
 
 // next step => make game over announcement
+// next step => mark grid to hover an attack

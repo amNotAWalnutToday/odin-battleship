@@ -93,13 +93,13 @@ const battleShips = (() => {
             ships.forEach(ship => {
                 if(ship.sunk) sunkShips.push(ship);
             });
-            console.log(sunkShips);
             return sunkShips.length;
         }
 
-        const getDirections = (length, x, y, direction, newCoords = []) => {
+        const getDirections = (length, x, y, direction) => {
             let [checkH, checkV] = [false, false]
-            
+            const newCoords = [];
+
             for(let i = 0; i < length; i++){
                 const horizontal = `[${x+i},${y}]`;
                 if(checkH) break;

@@ -210,6 +210,31 @@ h1 {
     background-color: rgb(255, 136, 136);
 }
 
+.grid-target,
+.grid-up,
+.grid-right {
+    width: calc(var(--grid-size) / 10);
+    height: calc(var(--grid-size) / 10);
+}
+
+.grid-up {
+    transform: rotate(90deg);
+}
+
+.grid-right {
+    transform: rotate(180deg);
+}
+
+.grid-target {
+    filter: invert();
+    background-color: cyan;
+    border-radius: calc(var(--grid-size) / 10);
+}
+
+#grid img {
+    pointer-events: none;
+}
+
 .hide {
     display: none;
 }
@@ -227,7 +252,8 @@ h1 {
 #player-icon-container button {
     height: 50px;
     width: 50px;
-    border-radius: 50%;
+    border-radius: 25px;
+    background-color: rgba(0,0,0,0);
 }
 
 #ship-menu button {
@@ -236,9 +262,15 @@ h1 {
     background-color: rgba(0,0,0,0);
 }
 
+#player-icon-container button:hover,
+#ship-menu button:hover,
 .title-screen button:hover {
     transform: scale(1.05);
     filter: saturate(10%);
     cursor: pointer;
+}
+
+#grid * {
+    cursor: none !important;
 }
 /* End of Buttons*/
