@@ -67,9 +67,8 @@ const userInterface = (() => {
             }, 0);
 
             if(con === 0 && ships.length > 0){
-                pointer.phase = 'attack';
                 pointer.player = 2;
-                setAnnouncement('Player 2 Placing Phase');
+                setAnnouncement('Player 2 \n Placing Phase');
                 setTimeout(() => changeGrid(player2, board2, true), 1000);
                 setTimeout(() => pointer.phase = 'place', 1001);
                 setGridTitle(player2);
@@ -87,14 +86,16 @@ const userInterface = (() => {
                 return total += current;
             }, 0);
             
-            if(con === 0 && ships.length > 0){
-                setTimeout(() => pointer.phase = 'attack', 2000);
+            if(con === 0 && ships.length > 0){     
                 pointer.player = 1;
-                removePlaceShipButtons();
                 setAnnouncement('Attack Phase');
-                setTimeout(setTurnStatus, 2000);
                 setTimeout(() => setAnnouncement('Player 1 Turn'), 1000);
-                setTimeout(() => changeGrid(player2, board2, true), 2000);
+                setTimeout(() => {
+                    pointer.phase = 'attack';
+                    setTurnStatus();
+                    changeGrid(player2, board2, true);
+                    removePlaceShipButtons();
+                }, 2000);       
             }
         }
 
@@ -111,19 +112,22 @@ const userInterface = (() => {
 
         // player status //
         const addPlayerIcons = () => {
+            const playerIconContainer = document.createElement('div');
+            playerIconContainer.setAttribute('id', 'player-icon-container')
             const player1Btn = document.createElement('button');
             const player2Btn = document.createElement('button');
             player1Btn.setAttribute('id', 'player-1');
             player2Btn.setAttribute('id', 'player-2');
             player1Btn.textContent = 'Player 1';
             player2Btn.textContent = 'Player 2';
-            container.appendChild(player1Btn);
-            container.appendChild(player2Btn);
-
+            container.appendChild(playerIconContainer);
+            
             const title = document.createElement('h1');
             title.setAttribute('id', 'grid-title');
             title.textContent = `Player[]`;
-            container.appendChild(title);
+
+            playerIconContainer.append(player1Btn, title, player2Btn);
+
             setGridTitle(player1);
         };
 
@@ -147,10 +151,8 @@ const userInterface = (() => {
             const status1 = document.querySelector('#status-1');
             const status2 = document.querySelector('#status-2');
             const status3 = document.querySelector('#status-3');
-            console.log(status1, status2, status3);
 
             if(pointer.phase === "place"){
-                console.log('am called?');
                 status1.textContent = `Phase: ${pointer.phase} ships`;
                 if(!pointer.direction) status3.textContent = 'Direction: none';
                 else status3.textContent = `Direction: ${pointer.direction}`;
@@ -375,7 +377,7 @@ const userInterface = (() => {
         };
 
         const changeGrid = (player, board, bypass = false) => {
-            if(pointer.phase === 'place') return;
+            if(pointer.phase === 'place' && !bypass) return;
             if(pointer.player === player.playerNumber && !bypass) return;
             removeGrid();
             setGridTitle(player);
@@ -384,9 +386,11 @@ const userInterface = (() => {
             pointer.player = player.playerNumber;        
 
             setAnnouncement('', true);
-            if(!bypass) setTurnStatus();
-            closePlaceShipMenu();
-            openPlaceShipMenu();
+            if(!bypass)setTurnStatus();
+            else if(bypass){
+                closePlaceShipMenu();
+                openPlaceShipMenu();
+            }
         };
 
         const chooseGridFunction = (e, board) => {
@@ -422,16 +426,16 @@ const userInterface = (() => {
             // buttons //
             const carrier = document.createElement('button');
             carrier.setAttribute('id', 'carrier');
-            carrier.textContent = 'carrier';
+            carrier.textContent = 'Carrier (5)';
             const battleship = document.createElement('button');
             battleship.setAttribute('id', 'battleship');
-            battleship.textContent = 'battleship';
+            battleship.textContent = 'Battle ship (4)';
             const submarine = document.createElement('button');
             submarine.setAttribute('id', 'submarine');
-            submarine.textContent = 'submarine';
+            submarine.textContent = 'Sub marine (3)';
             const patrolBoat = document.createElement('button');
             patrolBoat.setAttribute('id', 'patrol-boat');
-            patrolBoat.textContent = 'patrol boat';
+            patrolBoat.textContent = 'Patrol boat (2)';
             const rotate = document.createElement('button');
             rotate.setAttribute('id', 'rotate-ship');
             rotate.textContent = '↷ Rotate Ship ↷';
@@ -481,11 +485,9 @@ const userInterface = (() => {
             if(pointer.isPlacing && pointer.length === length){
                 pointer.isPlacing = false;
                 pointer.length = 0;
-                pointer.direction = '';
             }else{
                 pointer.isPlacing = true;
                 pointer.length = length;
-                pointer.direction = 'horizontal';
             }
             setTurnStatus();
             console.log(pointer);
@@ -560,12 +562,11 @@ const userInterface = (() => {
             setGridToPlayer(player1, board1);
             addGridEvents(player1, board1);
             addAnnouncement();
-            setAnnouncement('Player 1 Placing Phase')
+            setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
             
 
-            placeAllShips(board1); // delete
-            placeAllShips(board2); //delete
+
             setTurnStatus();
         };
 

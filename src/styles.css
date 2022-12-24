@@ -1,8 +1,13 @@
 :root {
+    --grid-font-c: rgb(52, 41, 51);
+    --box-color: rgba(155, 241, 249, 0.9);
     --grid1: blue;
     --grid2: red; 
     --line-color: rgb(90, 116, 232);
     --outline-color: black; 
+    --box-outline: 2px solid rgba(255, 255, 255, 0.8);
+
+    --grid-size: max(300px, 30vw);
 }
 
 *,
@@ -13,40 +18,103 @@
     box-sizing: border-box;
 }
 
-.gameScreen {
-    width: 100vw;
+/* Containers */
+#container {
+    overflow: hidden;
     height: 100vh;
+    width: 100vw;
+}
+
+#player-icon-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3%;
+    margin-top: 1rem;
 }
 
 #grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, max(30px, 4vw));
-    grid-template-rows: repeat(auto-fit, max(30px, 4vw));
+    grid-template-columns: repeat(auto-fit, calc(var(--grid-size) / 10));
+    grid-template-rows: repeat(auto-fit, calc(var(--grid-size) / 10));
     margin: 0 auto;
-    width: max(300px, 40vw);
-    height: max(300px, 40vw);
+    width: var(--grid-size);
+    height: var(--grid-size);
     box-shadow: 0px 0px 0px 5px var(--outline-color);
     transform: rotate(270deg);
 }
 
 #announcement {
     position: absolute;
-    top: max(300px, 40vh);
+    top: 5%;
     left: 50%;
     margin-left: -30%;
+    margin-top: -5vh;
     padding-top: 3vh;
     height: 10vh;
     width: 60%;
     text-align: center;
-    background-color: grey;
+    color: var(--grid-font-c);
+    font-size: 17px;
+    background-color: var(--box-color);
+    box-shadow: 0px 0px 5px 5px white;
+    outline: var(--box-outline);
+    border-radius: 10px;
     z-index: 1;
 }
 
-h1,
-h2 {
+@media(max-width: 420px){
+    #announcement {
+        height: 15vh !important;
+        white-space: pre;
+    }
+}
+
+#status-box {
+    width: var(--grid-size);
+    margin: 1rem auto;
+    padding: 2.5rem 0;
+    background-color: azure;
+    box-shadow: 0px 0px 0px 5px var(--outline-color);
+}
+
+#ship-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 75px;
+    width: fit-content;
+    margin-top: 2rem;
+    padding: 0 0.5rem;
+    background-color: grey;
+    border-radius: 0 10px 10px 0;
+    box-shadow: 0px 0px 0px 5px var(--outline-color);
+}
+
+@media(min-width: 1000px){
+    #ship-menu {
+        padding: 0 2rem;
+        gap: 2.5rem;
+    }
+}
+/* End of Containers*/
+
+/* Text */
+#grid-title {
+    margin: 1rem 0;
+}
+
+h1 {
     text-align: center;
 }
 
+#status-box h2 {
+    padding: 0.25rem 2.5rem;
+}
+
+/*End of Text*/
+
+/*Grid Components*/
 .p1,
 .p2 {
     border: 0.5px solid var(--line-color);
@@ -75,3 +143,19 @@ h2 {
 .hide {
     display: none;
 }
+
+/*End of Grid Components*/
+
+/* Buttons */
+#player-icon-container button {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+}
+
+#ship-menu button {
+    height: 50px;
+    width: 50px;
+    background-color: rgba(0,0,0,0);
+}
+/* End of Buttons*/
