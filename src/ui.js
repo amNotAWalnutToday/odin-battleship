@@ -9,37 +9,62 @@ const userInterface = (() => {
             container.setAttribute('class', 'title-screen');
         }
 
-        const addTitle = () => {
-            const title = document.createElement('h1');
-            title.textContent = 'BattleShips';
-            container.appendChild(title);
+        const addMenuContainer = () => {
+            const box = document.createElement('div');
+            box.setAttribute('id', 'title-screen-menu');
+            container.appendChild(box);
         }
 
-        const addButtons = () => { 
+        const addTitle = () => {
+            const menuContainer = document.querySelector('#title-screen-menu');
+            const title = document.createElement('h1');
+            title.textContent = 'BattleShips';
+            menuContainer.appendChild(title);
+        }
+
+        const addButtons = () => {
+            const menuContainer = document.querySelector('#title-screen-menu');
+            const btnContainer = document.createElement('div');
+            btnContainer.setAttribute('id', 'title-screen-btns');
             const pvpBtn = document.createElement('button');
+            pvpBtn.setAttribute('id', 'pvp-btn');
             const pvmBtn = document.createElement('button');
+            pvmBtn.setAttribute('id', 'pvm-btn');
             pvpBtn.textContent = 'Vs Player';
             pvmBtn.textContent = 'Vs Computer';
-            container.appendChild(pvmBtn);
-            container.appendChild(pvpBtn); 
+            menuContainer.appendChild(btnContainer);
+            btnContainer.append(pvpBtn, pvmBtn); 
         }
 
         const addEvents = () => {
-            //add events to load specific games
+            const pvp = gameScreen(true);
+            const pvm = gameScreen(false);
+            document.querySelector('#pvp-btn')
+                .addEventListener('click', pvp.loadGameScreen);
+            document.querySelector('#pvm-btn')
+                .addEventListener('click', pvm.loadGameScreen);
         };
 
         const loadTitleScreen = () => { 
             setContainer();
+            addMenuContainer();
             addTitle();
             addButtons();
+            addEvents();
         }
 
         return { loadTitleScreen, };
     };
 
-    const gameScreen = () => {
+    const gameScreen = (pvp = false) => {        
+        const setPlayer = () => {
+            return pvp
+                ? battleShips.player(2, false)
+                : battleShips.player(2, true);
+        }
+
         const player1 = battleShips.player(1, false);
-        const player2 = battleShips.player(2, false);
+        const player2 = setPlayer();
         const board1 = battleShips.gameBoard();
         const board2 = battleShips.gameBoard();
 
@@ -53,7 +78,10 @@ const userInterface = (() => {
         };
 
         const setContainer = () => {
-            container.setAttribute('class','gameScreen');
+            container.setAttribute('class','game-screen');
+            while(container.firstChild){
+                container.removeChild(container.firstChild);
+            }
         };
 
         // game controller //
@@ -600,5 +628,4 @@ const userInterface = (() => {
 
 export default userInterface;
 
-// next step => make announcements for every turn phase  
 // next step => make game over announcement

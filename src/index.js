@@ -24,7 +24,7 @@ const placeAllShips = (p1Board) => {
 
 
 const playGame = () => {
-    game.loadGameScreen();
+    intro.loadTitleScreen();
     placeAllShips(Board1);
     placeAllShips(Board2);
     player1.takeTurn('[5,4]', Board2, player1, player2, Board1);

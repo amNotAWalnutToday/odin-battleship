@@ -10,6 +10,7 @@
     --grid-size: max(300px, 30vw);
 
     font-family: Arial, Helvetica, sans-serif;
+    color: var(--grid-font-c);
 }
 
 *,
@@ -22,6 +23,37 @@
 
 /* Containers */
 
+.title-screen,
+#title-screen-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#title-screen-menu{
+    gap: 5rem;
+    padding: 1rem;
+    background-color: var(--box-color);
+}
+
+#title-screen-btns {
+    display: flex;
+    gap: 5rem;
+}
+
+@media (max-width: 450px){
+    #title-screen-btns {
+        flex-direction: column;
+        padding-bottom: 5rem;
+    }
+    .title-screen h1 {
+        font-size: 45px !important;
+    }
+}
+
+.title-screen button,
+#title-screen-menu,
 #player-icon-container,
 #status-box,
 #ship-menu,
@@ -118,6 +150,10 @@
     margin: 1rem 0;
 }
 
+.title-screen h1 {
+    font-size: 60px;
+}
+
 h1 {
     text-align: center;
 }
@@ -181,6 +217,13 @@ h1 {
 /*End of Grid Components*/
 
 /* Buttons */
+.title-screen button {
+    height: 5rem;
+    width: 10rem;
+    font-size: 30px;
+    background-color: var(--box-color);
+}
+
 #player-icon-container button {
     height: 50px;
     width: 50px;
@@ -191,5 +234,11 @@ h1 {
     height: 50px;
     width: 50px;
     background-color: rgba(0,0,0,0);
+}
+
+.title-screen button:hover {
+    transform: scale(1.05);
+    filter: saturate(10%);
+    cursor: pointer;
 }
 /* End of Buttons*/
