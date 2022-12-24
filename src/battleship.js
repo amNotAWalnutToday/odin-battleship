@@ -1,7 +1,6 @@
 const battleShips = (() => {
     //Factories
     const ship = (coords, length, timesHit, sunk) => {
-        
         const hit = (target) => {
             target.timesHit++;
         }
@@ -15,7 +14,7 @@ const battleShips = (() => {
         return { coords, length, timesHit, sunk, hit ,isSunk, }
     };
 
-    const gameBoard = (grid) => {
+    const gameBoard = (grid, isAi = false) => {
         //board objects
         const ships = [];
         const unplacedShips = [
@@ -167,6 +166,37 @@ const battleShips = (() => {
             return newShip;
         };
 
+        const aiPlaceShip = () => {
+            let shipDirection;
+            const [check5, check4, check3, check2] = [
+                checkStorageForShip(5),
+                checkStorageForShip(4),
+                checkStorageForShip(3),
+                checkStorageForShip(2)
+            ]
+            const [x,y, dirDec] = [
+                Math.floor(Math.random() * 9.9),
+                Math.floor(Math.random() * 9.9),
+                Math.random(),
+            ]
+            if(dirDec > 0.49) shipDirection = 'vertical'
+            else shipDirection = 'horizontal';
+            if(check5){
+                placeShip(5, `[${x},${y}]`, shipDirection);
+            }else if(check4){
+                placeShip(4, `[${x},${y}]`, shipDirection);
+            }else if(check3){
+                placeShip(3, `[${x},${y}]`, shipDirection);
+            }else if(check2){
+                placeShip(2, `[${x},${y}]`, shipDirection);
+            }
+            if(check5 || check4 || check3 || check2){
+                return aiPlaceShip();
+            }else {
+                return 'placed all ships';
+            }
+        };
+
         const receiveAttack = (coords) => {
             if(lose()) return 'game over';
             if(checkGridForHit(coords) || placePhase[0]) return;
@@ -192,9 +222,11 @@ const battleShips = (() => {
             return comparison.length >= ships.length;
         }
 
-        return { 
+        return {
+            isAi, 
             grid,
             placeShip,
+            aiPlaceShip,
             ships,
             unplacedShips,
             attackLog,

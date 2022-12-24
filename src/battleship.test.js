@@ -246,4 +246,14 @@ describe('Ai logic', () => {
         fakeAiTakesTurn(testBoard, testAi, testPlayer)
         expect(testBoard.attackLog).not.toStrictEqual(['[0,0]']);
     });
+
+    test('ai can place ships', () => {
+        expect(otherTestBoard.aiPlaceShip()).toBeTruthy();
+    });
+
+    test('ai board places ships randomly', () => {
+        otherTestBoard.placePhase[0] = true;
+        otherTestBoard.aiPlaceShip();
+        expect(otherTestBoard.ships.length).toBeGreaterThan(8); 
+    });
 });

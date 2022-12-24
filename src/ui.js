@@ -62,11 +62,16 @@ const userInterface = (() => {
                 ? battleShips.player(2, false)
                 : battleShips.player(2, true);
         }
+        const setBoard = () => {
+            return pvp
+                ? battleShips.gameBoard(null, false)
+                : battleShips.gameBoard(null, true);
+        }
 
         const player1 = battleShips.player(1, false);
         const player2 = setPlayer();
         const board1 = battleShips.gameBoard();
-        const board2 = battleShips.gameBoard();
+        const board2 = setBoard();
 
         const container = document.querySelector('#container');
         const pointer = {
@@ -103,7 +108,7 @@ const userInterface = (() => {
                 setGridTitle(player2);
             }
             endPlacing();
-        }
+        };
 
         const endPlacing = () => {
             const ships = []
@@ -118,15 +123,17 @@ const userInterface = (() => {
             if(con === 0 && ships.length > 0){     
                 pointer.player = 1;
                 setAnnouncement('Attack Phase');
+                toggleBtns();
                 setTimeout(() => setAnnouncement('Player 1 Turn'), 1000);
                 setTimeout(() => {
                     pointer.phase = 'attack';
+                    toggleBtns();
                     setTurnStatus();
                     changeGrid(player2, board2, true);
                     removePlaceShipButtons();
                 }, 2000);       
             }
-        }
+        };
 
         const endTurn = () => {
             if(player1.isTurn){
@@ -136,6 +143,14 @@ const userInterface = (() => {
             }
             setTurnStatus();
             setAnnouncement('', true);
+        };
+
+        const toggleBtns = () => {
+            const btns = document.querySelectorAll('button');
+            btns.forEach(btn => {
+                if(btn.disabled) btn.disabled = false;
+                else btn.disabled = true;
+            });
         }
         // end of game controller //
 
@@ -296,9 +311,10 @@ const userInterface = (() => {
                 Number(coords[2]),
                 Number(coords[4]),
             ];
-
-            board.placeShip(pointer.length, `[${x},${y}]`, pointer.direction);
-            markGridToShip(playerNumber, board);
+            !board.isAi
+                ? board.placeShip(pointer.length, `[${x},${y}]`, pointer.direction)
+                : board.aiPlaceShip();
+            if(!board.isAi)markGridToShip(playerNumber, board);
 
             closePlaceShipMenu();
             openPlaceShipMenu();
