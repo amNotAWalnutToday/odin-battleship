@@ -1,4 +1,5 @@
 import battleShips from "./battleship";
+import arrow from './img/arrow.png';
 
 const userInterface = (() => {
     const titleScreen = () => {
@@ -151,26 +152,29 @@ const userInterface = (() => {
             const status1 = document.querySelector('#status-1');
             const status2 = document.querySelector('#status-2');
             const status3 = document.querySelector('#status-3');
+            const box = `<div class="grid-ship"></div>`
+            let textArrow = `<img src="${arrow}" />`;
 
             if(pointer.phase === "place"){
                 status1.textContent = `Phase: ${pointer.phase} ships`;
-                if(!pointer.direction) status3.textContent = 'Direction: none';
-                else status3.textContent = `Direction: ${pointer.direction}`;
+                if(pointer.direction === 'vertical') textArrow = `<img src="${arrow}" />`;
+                else textArrow = `<img src="${arrow}" class="right">`
+                status3.innerHTML = `Direction: ${textArrow}`;
                 switch(pointer.length) {
                     case 0:
                         status2.textContent = 'Ship: none(0)'
                         break;
                     case 2:
-                        status2.textContent = `Ship: Patrol Boat(2)`;
+                        status2.innerHTML = `Ship: ${box}${box}`;
                         break;
                     case 3:
-                        status2.textContent = 'Ship: Submarine(3)';
+                        status2.innerHTML = `Ship: ${box}${box}${box}`;
                         break;
                     case 4:
-                        status2.textContent = 'Ship: Battleship(4)';
+                        status2.innerHTML = `Ship: ${box}${box}${box}${box}`;
                         break;
                     case 5:
-                        status2.textContent = 'Ship: Carrier(5)';
+                        status2.innerHTML = `Ship: ${box}${box}${box}${box}${box}`;
                         break;
                 }
             }else {

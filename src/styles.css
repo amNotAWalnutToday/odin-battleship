@@ -1,13 +1,15 @@
 :root {
     --grid-font-c: rgb(52, 41, 51);
-    --box-color: rgba(155, 241, 249, 0.9);
-    --grid1: blue;
-    --grid2: red; 
+    --box-color: rgba(240, 255, 255, 0.9);
+    --grid1: darkblue;
+    --grid2: rgb(0, 140, 255); 
     --line-color: rgb(90, 116, 232);
-    --outline-color: black; 
+    --outline-color: rgb(53, 74, 94); 
     --box-outline: 2px solid rgba(255, 255, 255, 0.8);
 
     --grid-size: max(300px, 30vw);
+
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 *,
@@ -19,18 +21,31 @@
 }
 
 /* Containers */
+
+#player-icon-container,
+#status-box,
+#ship-menu,
+#grid {
+    box-shadow: 0px 0px 0px 5px var(--outline-color);
+    border-radius: 10px; /*not grid*/
+}
+
 #container {
     overflow: hidden;
     height: 100vh;
     width: 100vw;
+    background: url('https://cdn.pixabay.com/photo/2013/12/17/20/10/bubbles-230014_960_720.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 #player-icon-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: center;
-    gap: 3%;
-    margin-top: 1rem;
+    margin: 0.3rem auto;
+    background-color: var(--box-color);
+    width: calc(var(--grid-size) * 1.1);
 }
 
 #grid {
@@ -40,22 +55,23 @@
     margin: 0 auto;
     width: var(--grid-size);
     height: var(--grid-size);
-    box-shadow: 0px 0px 0px 5px var(--outline-color);
     transform: rotate(270deg);
+    border-radius: 1px !important;
 }
 
 #announcement {
     position: absolute;
-    top: 5%;
+    top: 25%;
     left: 50%;
-    margin-left: -30%;
+    margin-left: -35%;
     margin-top: -5vh;
     padding-top: 3vh;
     height: 10vh;
-    width: 60%;
+    width: 70%;
     text-align: center;
     color: var(--grid-font-c);
     font-size: 17px;
+    font-family: monofett;
     background-color: var(--box-color);
     box-shadow: 0px 0px 5px 5px white;
     outline: var(--box-outline);
@@ -74,8 +90,7 @@
     width: var(--grid-size);
     margin: 1rem auto;
     padding: 2.5rem 0;
-    background-color: azure;
-    box-shadow: 0px 0px 0px 5px var(--outline-color);
+    background-color: var(--box-color);
 }
 
 #ship-menu {
@@ -86,9 +101,8 @@
     width: fit-content;
     margin-top: 2rem;
     padding: 0 0.5rem;
-    background-color: grey;
+    background-color: var(--box-color);
     border-radius: 0 10px 10px 0;
-    box-shadow: 0px 0px 0px 5px var(--outline-color);
 }
 
 @media(min-width: 1000px){
@@ -111,8 +125,28 @@ h1 {
 #status-box h2 {
     padding: 0.25rem 2.5rem;
 }
-
 /*End of Text*/
+
+/*Images*/
+#status-box div {
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+    vertical-align: bottom;
+    border: 2px solid var(--outline-color);
+}
+
+#status-box img {
+    width: 30px;
+    vertical-align: bottom;
+}
+
+.right {
+    transform: rotate(90deg);
+}
+
+
+/*End of Images*/
 
 /*Grid Components*/
 .p1,
