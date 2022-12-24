@@ -47,7 +47,7 @@ const userInterface = (() => {
             player: 1,
             isPlacing: false,
             length: 0,
-            direction: '',
+            direction: 'horizontal',
             phase: 'place' // or attack
         };
 
@@ -88,9 +88,11 @@ const userInterface = (() => {
             }, 0);
             
             if(con === 0 && ships.length > 0){
-                pointer.phase = 'attack';
+                setTimeout(() => pointer.phase = 'attack', 2000);
                 pointer.player = 1;
+                removePlaceShipButtons();
                 setAnnouncement('Attack Phase');
+                setTimeout(setTurnStatus, 2000);
                 setTimeout(() => setAnnouncement('Player 1 Turn'), 1000);
                 setTimeout(() => changeGrid(player2, board2, true), 2000);
             }
@@ -120,22 +122,65 @@ const userInterface = (() => {
 
             const title = document.createElement('h1');
             title.setAttribute('id', 'grid-title');
-            title.textContent = `Player[], []Phase`;
+            title.textContent = `Player[]`;
             container.appendChild(title);
             setGridTitle(player1);
         };
 
         const addStatus = () => {
-            const status = document.createElement('h2');
-            status.textContent = 'player[]';
-            container.appendChild(status);
+            const statusBox = document.createElement('div');
+            statusBox.setAttribute('id', 'status-box');
+            const status1 = document.createElement('h2'); // phase / turn
+            status1.setAttribute('id', 'status-1');
+            status1.textContent = 'phase: / turn: ';
+            const status2 = document.createElement('h2') // ship / round
+            status2.setAttribute('id', 'status-2');
+            status2.textContent = 'ship: / round:'
+            const status3 = document.createElement('h2') // direction / ships sunk
+            status3.setAttribute('id', 'status-3');
+            status3.textContent = 'direction: / ships sunk:';
+            container.appendChild(statusBox);
+            statusBox.append(status1, status2, status3);
         }
 
         const setTurnStatus = () => {
-            let turn = 0;
-            if(player1.isTurn)turn = 1;
-            else if(player2.isTurn) turn = 2;
-            document.querySelector('h2').textContent = `Turn to attack: player${turn}`
+            const status1 = document.querySelector('#status-1');
+            const status2 = document.querySelector('#status-2');
+            const status3 = document.querySelector('#status-3');
+            console.log(status1, status2, status3);
+
+            if(pointer.phase === "place"){
+                console.log('am called?');
+                status1.textContent = `Phase: ${pointer.phase} ships`;
+                if(!pointer.direction) status3.textContent = 'Direction: none';
+                else status3.textContent = `Direction: ${pointer.direction}`;
+                switch(pointer.length) {
+                    case 0:
+                        status2.textContent = 'Ship: none(0)'
+                        break;
+                    case 2:
+                        status2.textContent = `Ship: Patrol Boat(2)`;
+                        break;
+                    case 3:
+                        status2.textContent = 'Ship: Submarine(3)';
+                        break;
+                    case 4:
+                        status2.textContent = 'Ship: Battleship(4)';
+                        break;
+                    case 5:
+                        status2.textContent = 'Ship: Carrier(5)';
+                        break;
+                }
+            }else {
+                let turn = 0;
+                if(player1.isTurn)turn = 1;
+                else if(player2.isTurn) turn = 2;
+                status1.textContent = `Turn: player${turn}`;
+                status2.textContent = `Round: ${board2.attackLog.length}`;
+                pointer.player === 1 
+                    ? status3.textContent = `Ships Sunk: ${board1.checkNumOfSunkShips()}`
+                    : status3.textContent = `Ships Sunk: ${board2.checkNumOfSunkShips()}`;
+            }
         };
 
         const addAnnouncement = () => {
@@ -173,7 +218,7 @@ const userInterface = (() => {
         // grid title //
         const setGridTitle = (player) => {
             const title = document.querySelector('#grid-title');
-            title.textContent = `player: ${player.playerNumber}, phase: ${pointer.phase}`;
+            title.textContent = `Player ${player.playerNumber}'s Board`;
         }
         // end of grid title //
 
@@ -237,17 +282,23 @@ const userInterface = (() => {
                 Number(coords[2]),
                 Number(coords[4]),
             ];
+
             if(playerNumber === 2 && player1.isTurn){
                 player1.takeTurn(`[${x},${y}]`, board, player1, player2, board1);
                 markGrid(playerNumber, board, true);
-                setAnnouncement('Player 2 Turn Begin');
-                setTimeout(endTurn, 3000);
+                if(!player1.isTurn){
+                    setAnnouncement('Player 2 Turn');
+                    setTimeout(endTurn, 2000);
+                }
             }else if(playerNumber === 1 && player2.isTurn){
                 player2.takeTurn(`[${x},${y}]`, board, player2, player1, board2);
                 markGrid(playerNumber, board, true);
-                setAnnouncement('Player 1 Turn Begin');
-                setTimeout(endTurn, 3000);
+                if(!player2.isTurn){
+                    setAnnouncement('Player 1 Turn');
+                    setTimeout(endTurn, 2000);
+                }
             }
+            setTurnStatus();
         };
 
         const markGridToShip = (playerNumber, board) => {
@@ -333,6 +384,7 @@ const userInterface = (() => {
             pointer.player = player.playerNumber;        
 
             setAnnouncement('', true);
+            if(!bypass) setTurnStatus();
             closePlaceShipMenu();
             openPlaceShipMenu();
         };
@@ -435,6 +487,7 @@ const userInterface = (() => {
                 pointer.length = length;
                 pointer.direction = 'horizontal';
             }
+            setTurnStatus();
             console.log(pointer);
         };
 
@@ -444,6 +497,7 @@ const userInterface = (() => {
                     ? pointer.direction = 'vertical'
                     : pointer.direction = 'horizontal'
                 : 'nothing to rotate';
+            setTurnStatus();
         };
 
         const addShipButtonEvents = () => {
@@ -486,6 +540,13 @@ const userInterface = (() => {
             }
         };
 
+        const removePlaceShipButtons = () => {
+            const menu = document.querySelector('#ship-menu')
+            while(menu.firstChild){
+                menu.removeChild(menu.firstChild);
+            }
+        }
+
         // end of place ship buttons //
 
         const loadGameScreen = () => {
@@ -501,10 +562,11 @@ const userInterface = (() => {
             addAnnouncement();
             setAnnouncement('Player 1 Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-            setTurnStatus();
+            
 
             placeAllShips(board1); // delete
             placeAllShips(board2); //delete
+            setTurnStatus();
         };
 
         //////////////////
