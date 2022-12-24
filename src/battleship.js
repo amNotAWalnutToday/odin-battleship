@@ -90,6 +90,14 @@ const battleShips = (() => {
             else return false;
         };
 
+        const checkNumOfSunkShips = (sunkShips = []) => {
+            ships.forEach(ship => {
+                if(ship.sunk) sunkShips.push(ship);
+            });
+            console.log(sunkShips);
+            return sunkShips.length;
+        }
+
         const getDirections = (length, x, y, direction, newCoords = []) => {
             let [checkH, checkV] = [false, false]
             
@@ -192,6 +200,7 @@ const battleShips = (() => {
             attackLog,
             checkGridForShip,
             checkGridForHit,
+            checkNumOfSunkShips,
             receiveAttack,
             //remove below
             placePhase,
