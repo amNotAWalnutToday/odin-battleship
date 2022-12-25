@@ -75,7 +75,7 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    margin: 0.3rem auto;
+    margin: 0.3rem auto 1rem auto;
     background-color: var(--box-color);
     width: calc(var(--grid-size) * 1.1);
 }
@@ -89,6 +89,7 @@
     height: var(--grid-size);
     transform: rotate(270deg);
     border-radius: 1px !important;
+    background-color: var(--grid2);
 }
 
 #announcement {
@@ -115,6 +116,10 @@
     #announcement {
         height: 15vh !important;
         white-space: pre;
+    }
+
+    #status-box {
+        padding: 0.5rem 0 !important;
     }
 }
 
@@ -203,11 +208,15 @@ h1 {
 }
 
 .grid-hit {
-    background-color: olive !important; 
+    background: radial-gradient(red 40%, rgba(165, 42, 42, 0.6)); 
 }
 
-.grid-miss {
-    background-color: rgb(255, 136, 136);
+.p1.grid-miss {
+    background: radial-gradient(rgb(255, 202, 202) 40%, var(--grid1));
+}
+
+.p2.grid-miss {
+    background: radial-gradient(rgb(255, 202, 202) 40%, var(--grid2));
 }
 
 .grid-target,
@@ -254,6 +263,16 @@ h1 {
     width: 50px;
     border-radius: 25px;
     background-color: rgba(0,0,0,0);
+}
+
+#player-1.highlight {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 5px 5px var(--grid1);
+}
+
+#player-2.highlight {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 5px 5px var(--grid2);
 }
 
 #ship-menu button {

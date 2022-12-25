@@ -268,8 +268,29 @@ const userInterface = (() => {
         // grid title //
         const setGridTitle = (player) => {
             const title = document.querySelector('#grid-title');
-            title.textContent = `Player ${player.playerNumber}'s Board`;
+            title.textContent = `Player ${player.playerNumber}`;
+            setGridPlayerBtn();
         }
+
+        const setGridPlayerBtn = () => {
+            const btn1 = document.querySelector('#player-1');
+            const btn2 = document.querySelector('#player-2');
+            console.log(pointer.player , pointer.phase);
+            if((pointer.player === 1 && pointer.phase === 'place')){
+                btn1.classList.add('highlight');
+                btn2.classList.remove('highlight');
+            }else if(pointer.player === 2 && pointer.phase ==='place') {
+                btn2.classList.add('highlight');
+                btn1.classList.remove('highlight');
+            }else if(pointer.player === 1 && pointer.phase === 'attack'){
+                btn2.classList.add('highlight');
+                btn1.classList.remove('highlight');
+            }else if(pointer.player === 2 && pointer.phase === 'attack') {
+                btn1.classList.add('highlight');
+                btn2.classList.remove('highlight');
+            }
+        }
+
         // end of grid title //
 
         // grid //
@@ -632,7 +653,7 @@ const userInterface = (() => {
             addAnnouncement();
             setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-
+            
             setTurnStatus();
         };
 
