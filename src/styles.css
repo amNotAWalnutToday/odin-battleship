@@ -208,15 +208,18 @@ h1 {
 }
 
 .grid-hit {
-    background: radial-gradient(red 40%, rgba(165, 42, 42, 0.6)); 
+    background: url('./img/explosion-ship.png');
+    background-size: contain;
 }
 
 .p1.grid-miss {
-    background: radial-gradient(rgb(255, 202, 202) 40%, var(--grid1));
+    background: url('./img/whirlpool-miss-dark.png');/*radial-gradient(rgb(255, 202, 202) 40%, var(--grid1));*/
+    background-size: contain;
 }
 
 .p2.grid-miss {
-    background: radial-gradient(rgb(255, 202, 202) 40%, var(--grid2));
+    background: url('./img/whirlpool-miss-light.png')/*radial-gradient(rgb(255, 202, 202) 40%, var(--grid2))*/;
+    background-size: contain;
 }
 
 .grid-target,
@@ -266,13 +269,15 @@ h1 {
 }
 
 #player-1.highlight {
+    color: var(--grid2);
+    background-color: var(--grid1);
     transform: scale(1.1);
-    box-shadow: 0px 0px 5px 5px var(--grid1);
 }
 
 #player-2.highlight {
+    color: var(--grid1);
+    background-color: var(--grid2);
     transform: scale(1.1);
-    box-shadow: 0px 0px 5px 5px var(--grid2);
 }
 
 #ship-menu button {
@@ -281,7 +286,6 @@ h1 {
     background-color: rgba(0,0,0,0);
 }
 
-#player-icon-container button:hover,
 #ship-menu button:hover,
 .title-screen button:hover {
     transform: scale(1.05);
