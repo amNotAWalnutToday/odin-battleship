@@ -8,6 +8,8 @@
     --box-outline: 2px solid rgba(255, 255, 255, 0.8);
 
     --grid-size: max(300px, 30vw);
+    --grid-size-wide: min(450px, 30vw);
+    --grid-size-mini: 150px;
 
     font-family: Arial, Helvetica, sans-serif;
     color: var(--grid-font-c);
@@ -52,18 +54,21 @@
     }
 }
 
+#winner-box button,
+#winner-box,
 .title-screen button,
 #title-screen-menu,
 #player-icon-container,
 #status-box,
 #ship-menu,
+#grid-2,
 #grid {
     box-shadow: 0px 0px 0px 5px var(--outline-color);
     border-radius: 10px; /*not grid*/
 }
 
 #container {
-    overflow: hidden;
+    overflow-x: hidden;
     height: 100vh;
     width: 100vw;
     background: url('https://cdn.pixabay.com/photo/2013/12/17/20/10/bubbles-230014_960_720.jpg');
@@ -80,16 +85,28 @@
     width: calc(var(--grid-size) * 1.1);
 }
 
+#grid-2,
 #grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, calc(var(--grid-size) / 10));
     grid-template-rows: repeat(auto-fit, calc(var(--grid-size) / 10));
-    margin: 0 auto;
+    margin: 1rem auto;
     width: var(--grid-size);
     height: var(--grid-size);
     transform: rotate(270deg);
     border-radius: 1px !important;
     background-color: var(--grid2);
+}
+
+#grid-2 {
+    margin-top: 1rem;
+}
+
+.mini-grid {
+    grid-template-columns: repeat(auto-fit, calc(var(--grid-size-mini) / 10)) !important;
+    grid-template-rows: repeat(auto-fit, calc(var(--grid-size-mini) / 10)) !important;
+    width: var(--grid-size-mini) !important;
+    height: var(--grid-size-mini) !important;
 }
 
 #announcement {
@@ -148,6 +165,18 @@
         gap: 2.5rem;
     }
 }
+
+#winner-box {
+    display: flex;
+    justify-content: space-evenly;
+    height: fit-content;
+    width: max(250px, 50vw);
+    margin: 1rem auto;
+    background-color: var(--box-color);
+    font-family: monofett;
+    letter-spacing: 1px;;
+}
+
 /* End of Containers*/
 
 /* Text */
@@ -156,7 +185,9 @@
 }
 
 .title-screen h1 {
+    padding-top: 1.5rem;
     font-size: 60px;
+    font-family: monofett;
 }
 
 h1 {
@@ -254,6 +285,7 @@ h1 {
 /*End of Grid Components*/
 
 /* Buttons */
+#winner-box button,
 .title-screen button {
     height: 5rem;
     width: 10rem;
@@ -286,6 +318,13 @@ h1 {
     background-color: rgba(0,0,0,0);
 }
 
+#player-icon-container button:hover {
+    cursor: pointer;
+    box-shadow: 0px 0px 5px 1px black;
+    transform: scale(1.2);
+}
+
+#winner-box button:hover,
 #ship-menu button:hover,
 .title-screen button:hover {
     transform: scale(1.05);
@@ -295,5 +334,9 @@ h1 {
 
 #grid * {
     cursor: none !important;
+}
+
+#winner-box button {
+
 }
 /* End of Buttons*/

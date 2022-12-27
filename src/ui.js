@@ -8,6 +8,9 @@ const userInterface = (() => {
         
         const setContainer = () => {
             container.setAttribute('class', 'title-screen');
+            while(container.firstChild){
+                container.removeChild(container.firstChild);
+            }
         }
 
         const addMenuContainer = () => {
@@ -275,7 +278,7 @@ const userInterface = (() => {
         const setGridPlayerBtn = () => {
             const btn1 = document.querySelector('#player-1');
             const btn2 = document.querySelector('#player-2');
-            console.log(pointer.player , pointer.phase);
+
             if((pointer.player === 1 && pointer.phase === 'place')){
                 btn1.classList.add('highlight');
                 btn2.classList.remove('highlight');
@@ -295,14 +298,15 @@ const userInterface = (() => {
 
         // grid //
 
-        const addGrid = () => {
+        const addGrid = (plusid = 'grid') => {
             const grid = document.createElement('div');
-            grid.setAttribute('id', 'grid');
+            grid.setAttribute('id', `${plusid}`);
             container.appendChild(grid);
         }
 
-        const setGridToPlayer = (player, board) => {
-            const grid = document.querySelector('#grid');
+        const setGridToPlayer = (player, board, plusid = 'grid') => {
+            const grid = document.querySelector(`#${plusid}`);
+            console.log(grid);
             const playerNumber = player.playerNumber;
             const coords = board.grid;
             coords.forEach(coord => {
@@ -368,6 +372,11 @@ const userInterface = (() => {
                 }
             }
             setTurnStatus();
+            loseGame();
+        };
+
+        const loseGame = () => {
+            if(board1.lose() || board2.lose()) loadGameOverScreen();
         };
 
         const markGridToShip = (playerNumber, board) => {
@@ -498,6 +507,24 @@ const userInterface = (() => {
                 btn.addEventListener('touchend', removeHover);
             });
         };
+
+        const loadGrid = (playerNumber, two = false) => {
+            addGrid('grid');
+
+            if(two){
+                addWinner();
+                addGrid('grid-2');
+            }
+            if(playerNumber === 1){
+                setGridToPlayer(player1, board1, 'grid');
+                markGrid(player1.playerNumber, board1, false);
+            }else{
+                setGridToPlayer(player1, board1, 'grid');
+                markGrid(player1.playerNumber, board1, false);
+                setGridToPlayer(player2, board2, 'grid-2');
+                markGrid(player2.playerNumber, board2, false);
+            }
+        }
         // end of grid //
         // end of grid display //
         
@@ -640,23 +667,90 @@ const userInterface = (() => {
 
         // end of place ship buttons //
 
+        // game over //
+        const addGrids = () => {
+            setContainer();
+            loadGrid(2, true);
+        };
+
+        const addWinner = () => {
+            const box = document.createElement('div');
+            box.setAttribute('id', 'winner-box');
+            container.appendChild(box);
+
+            const winner = document.createElement('h1');
+            winner.classList.add('winner');
+            winner.textContent = '';
+            box.appendChild(winner);
+        }
+
+        const setWinner = () => {
+            const winner = document.querySelector('.winner');
+            const rounds = board2.attackLog.length;
+            board1.lose()
+                ? winner.textContent = `Player 2 WINS! in ${rounds} rounds`
+                : winner.textContent = `Player 1 WINS! in ${rounds} rounds`
+        }
+
+        const addReturnMenuBtn = () => {
+            const btn = document.createElement('button');
+            btn.setAttribute('id', 'main-menu-btn')
+            btn.textContent = 'Main Menu';
+            const replayBtn = document.createElement('button');
+            replayBtn.setAttribute('id', 'replay-btn');
+            replayBtn.textContent = 'Replay';
+
+            const box = document.querySelector('#winner-box');
+            while(box.firstChild){
+                box.removeChild(box.firstChild);
+            }
+            box.append(btn, replayBtn);
+            addMenuEvent();
+            container.removeEventListener('click', addReturnMenuBtn);
+        }
+
+        const addReturnEvent = () => {
+            container.addEventListener('click', addReturnMenuBtn);
+        }
+
+        const addMenuEvent = () => {
+            const btn = document.querySelector('#main-menu-btn');
+            btn.addEventListener('click', () => {
+                const newTitleScreen = titleScreen();
+                newTitleScreen.loadTitleScreen();
+            });
+            const replayBtn = document.querySelector('#replay-btn');
+            replayBtn.addEventListener('click', () => {
+                const newGameScreen = gameScreen(pvp);
+                newGameScreen.loadGameScreen();
+            });
+        }
+
+        // end of game over //
+
+        // loading //
         const loadGameScreen = () => {
             setContainer();
             addPlayerIcons();
-            addGrid();
+            loadGrid(1);
             addIconEvents();
             addStatus();
             addPlaceShipButton();
             addOpenPlaceShipEvent();
-            setGridToPlayer(player1, board1);
             addGridEvents(player1, board1);
             addAnnouncement();
             setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-            
+
             setTurnStatus();
         };
 
+        const loadGameOverScreen = () => {
+            addGrids();
+            setWinner();
+            addReturnEvent();
+        }
+        // end of loading //
         //////////////////
         // remove below //
         /////////////////
@@ -677,11 +771,11 @@ const userInterface = (() => {
     
     return {
         titleScreen,
-        gameScreen,
+        gameScreen, //remove
     }
 })();
 
 export default userInterface;
 
-// next step => make game over announcement
-// next step => mark grid to hover an attack
+// next step => readjust the size for bigger width screens by moving the place ship widget higher
+// try to add a small grid to show what the computer is doing on vs computer
