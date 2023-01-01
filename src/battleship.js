@@ -220,7 +220,7 @@ const battleShips = (() => {
                 if(ship.sunk) comparison.push(ship);
             });
             return comparison.length >= ships.length;
-        }
+        };
 
         return {
             isAi, 
@@ -256,17 +256,77 @@ const battleShips = (() => {
             target.isTurn = true;
             if(target.isAi) aiTakesTurn(targetBoard, target, user, board);
             return `${results} at ${coords}`;
-        }
+        };
 
         const aiTakesTurn = (board, user, target, targetBoard) => {
-            const [x, y] = [Math.floor(Math.random() * 9.9), Math.floor(Math.random() * 9.9)];
-            const coords = `[${x},${y}]`;
+            const coords = aiChooseCoords(board);
             const results = takeTurn(coords, board, user, target, targetBoard);
             if(!results) return aiTakesTurn(board,user,target, targetBoard)
             else return results;
+        };
+
+        const aiChooseCoords = (board) => {
+            const checkLastHit = aiChooseLastHit(board);
+            const coords = aiChooseDirection(board, checkLastHit);
+
+            if(checkLastHit && board.checkGridForShip(checkLastHit) && coords) return coords;
+            else {
+                const x = Math.floor(Math.random() * 9.9);
+                const y = Math.floor(Math.random() * 9.9);
+                return `[${x},${y}]`;
+            }
+        };
+
+        const aiChooseLastHit = (board) => {
+            const hits = [];
+            board.attackLog.forEach(coord => {
+                if(board.checkGridForShip(coord)) hits.unshift(coord);
+            });
+            if(hits.length < 1) return;
+
+            const validHits = [];
+            hits.forEach(hit => {
+                if(aiChooseDirection(board, hit)) validHits.unshift(hit);
+            });
+            if(validHits.length < 1) return;
+            return validHits[0];
+        };
+
+        const aiChooseDirection = (board, lastHit) => {
+            if(!lastHit) return;
+            let dir; 
+            const up = Number(lastHit[3]) + 1;
+            const down = Number(lastHit[3]) - 1;
+            const left = Number(lastHit[1]) - 1;
+            const right = Number(lastHit[1]) + 1;
+            const [checkUp, checkDown, checkLeft, checkRight] = [
+                board.checkGridForHit(`[${lastHit[1]},${up}]`),
+                board.checkGridForHit(`[${lastHit[1]},${down}]`),
+                board.checkGridForHit(`[${left},${lastHit[3]}]`),
+                board.checkGridForHit(`[${right},${lastHit[3]}]`),
+            ];
+
+            if(!checkRight){
+                dir = `[${right},${lastHit[3]}]`;
+            }else if(!checkUp){
+                dir = `[${lastHit[1]},${up}]`;
+            }else if(!checkLeft){
+                dir = `[${left},${lastHit[3]}]`;
+            }else if(!checkDown){
+                dir = `[${lastHit[1]},${down}]`;
+            }else return;
+
+            if(!validateCoords(Number(dir[1]),Number(dir[3]))) return;
+            else return dir;
+        };
+
+        const validateCoords = (x,y) => {
+            if(x > 9 || x < 0 || isNaN(x)) return;
+            else if(y > 9 || y < 0 || isNaN(y)) return;
+            else return true;
         }
 
-        return { playerNumber, takeTurn, aiTakesTurn, isTurn, isAi };
+        return { playerNumber, takeTurn, aiTakesTurn, isTurn, isAi, };
     }
 
     return {
