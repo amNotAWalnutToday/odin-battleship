@@ -88,8 +88,8 @@ const userInterface = (() => {
             miniGrid: false
         };
 
-        const setContainer = () => {
-            container.setAttribute('class','game-screen');
+        const setContainer = (conClass) => {
+            container.setAttribute('class',`${conClass}`);
             while(container.firstChild){
                 container.removeChild(container.firstChild);
             }
@@ -764,7 +764,7 @@ const userInterface = (() => {
 
         // game over //
         const addGrids = () => {
-            setContainer();
+            setContainer('game-over');
             loadGrid(2, true);
         };
 
@@ -825,7 +825,7 @@ const userInterface = (() => {
 
         // loading //
         const loadGameScreen = () => {
-            setContainer();
+            setContainer('game-screen');
             addPlayerIcons();
             loadGrid(1);
             addIconEvents();
@@ -836,7 +836,7 @@ const userInterface = (() => {
             addAnnouncement();
             setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-            placeAllShips(board1);
+            
             setTurnStatus();
         };
 
@@ -861,7 +861,7 @@ const userInterface = (() => {
         };
         
 
-        return { loadGameScreen, };
+        return { loadGameScreen, loadGameOverScreen };
     };
     
     return {
@@ -872,6 +872,5 @@ const userInterface = (() => {
 
 export default userInterface;
 
-// try to add a small grid to show what the computer is doing on vs computer
 // add mines that explode on the your grid if you hit the enemies mines in a 3x3
 // clean code
