@@ -21,6 +21,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    user-select: none;
 }
 
 /* Containers */
@@ -296,6 +297,11 @@ h1 {
     height: calc(var(--grid-size) / 10);
 }
 
+.p1 .grid-up,
+.p1 .grid-right {
+    filter: invert();
+}
+
 .grid-up {
     transform: rotate(90deg);
 }
@@ -386,7 +392,6 @@ h1 {
 
 #grid * {
     cursor: none !important;
-    user-select: none;
 }
 
 #place-ship {
