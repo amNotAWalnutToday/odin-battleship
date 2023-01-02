@@ -21,7 +21,8 @@ const battleShips = (() => {
             {name: 'carrier', length: 5, number: 1},
             {name: 'battleship', length: 4, number: 1},
             {name: 'submarine', length: 3, number: 4},
-            {name: 'patrol boat', length: 2, number: 3}
+            {name: 'patrol boat', length: 2, number: 3},
+            {name: 'mine', length: 1, number: 3}
         ];
         const attackLog = [];
         const placePhase = [true];
@@ -61,6 +62,8 @@ const battleShips = (() => {
                     break;
                 case 2: unplacedShips[3].number--
                     break;
+                case 1: unplacedShips[4].number--
+                    break;
             }
         };
         // grid iterators //
@@ -69,7 +72,7 @@ const battleShips = (() => {
                 if(coord.shipHere && coord.coordinate === coords ) return coord;
             });
             if(spots.length < 1 || !spots) return false;
-            return spots[0].shipHere;
+            else return spots[0].shipHere;
         };
 
         const checkGridForHit = (coords) => {
@@ -77,7 +80,15 @@ const battleShips = (() => {
                 if(coord.hitHere && coord.coordinate === coords) return coord;
             });
             if(spots.length < 1 || !spots) return false;
-            return spots[0].hitHere;
+            else return spots[0].hitHere;
+        };
+
+        const checkGridForMine = (coords) => {
+            const mines = ships.filter(ship => {
+                if(ship.length === 1 && ship.coords[0] === coords) return ship;
+            });
+            if(mines.length < 1 || !mines) return false;
+            else return true;
         };
 
         const checkStorageForShip = (length) => {
@@ -136,7 +147,8 @@ const battleShips = (() => {
                 checkStorageForShip(5),
                 checkStorageForShip(4),
                 checkStorageForShip(3),
-                checkStorageForShip(2)
+                checkStorageForShip(2),
+                checkStorageForShip(1)
             ];
 
             if(totalShipsInStorage.every(ship => !ship)) end = true;
@@ -214,6 +226,17 @@ const battleShips = (() => {
             return 'hit';
         };
 
+        const mineExplodes = (coords) => {
+            const [x, y] = [Number(coords[1]), Number(coords[3])];
+            for(let i = -1; i <= 1; i++){
+                for(let j = -1; j <= 1; j++){
+                    const attackCoords = `[${x+i},${y+j}]`;
+                    if(attackCoords.length === 5) receiveAttack(attackCoords);   
+                }
+            }
+            console.log(attackLog);
+        };
+
         const lose = () => {
             const comparison = [];
             ships.forEach(ship => {
@@ -232,8 +255,10 @@ const battleShips = (() => {
             attackLog,
             checkGridForShip,
             checkGridForHit,
+            checkGridForMine,
             checkNumOfSunkShips,
             receiveAttack,
+            mineExplodes,
             //remove below
             placePhase,
             lose,
@@ -248,20 +273,23 @@ const battleShips = (() => {
 
         let isTurn = firstTurn(); 
 
-        const takeTurn = (coords, board, user, target, targetBoard) => {
+        const takeTurn = (coords, board, user, target, targetsBoard) => {
             if(!user.isTurn || board.checkGridForHit(coords)) return;
-            const results = board.receiveAttack(coords);
-            if(results === 'game over') return 'game over';
+            const results = board.receiveAttack(coords, targetsBoard);
+            if(results === 'hit' && board.checkGridForMine(coords)){
+                targetsBoard.mineExplodes(coords);
+            }
+            else if(results === 'game over') return 'game over';
             user.isTurn = false;
             target.isTurn = true;
-            if(target.isAi) aiTakesTurn(targetBoard, target, user, board);
+            if(target.isAi) aiTakesTurn(targetsBoard, target, user, board);
             return `${results} at ${coords}`;
         };
 
-        const aiTakesTurn = (board, user, target, targetBoard) => {
+        const aiTakesTurn = (board, user, target, targetsBoard) => {
             const coords = aiChooseCoords(board);
-            const results = takeTurn(coords, board, user, target, targetBoard);
-            if(!results) return aiTakesTurn(board,user,target, targetBoard)
+            const results = takeTurn(coords, board, user, target, targetsBoard);
+            if(!results) return aiTakesTurn(board,user,target, targetsBoard)
             else return results;
         };
 

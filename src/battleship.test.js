@@ -99,6 +99,9 @@ describe('ship placing limits', () => {
         testBoard.placeShip(2, '[0,7]', 'horizontal');
         testBoard.placeShip(2, '[0,8]', 'horizontal');
         testBoard.placeShip(2, '[0,9]', 'horizontal');
+        testBoard.placeShip(1, '[9,7]', 'horizontal');
+        testBoard.placeShip(1, '[9,8]', 'horizontal');
+        testBoard.placeShip(1, '[9,9]', 'horizontal');
     };
     
     beforeEach(() => {
@@ -112,7 +115,8 @@ describe('ship placing limits', () => {
             {name: 'carrier', length: 5, number: 1},
             {name: 'battleship', length: 4, number: 1},
             {name: 'submarine', length: 3, number: 4},
-            {name: 'patrol boat', length: 2, number: 3}
+            {name: 'patrol boat', length: 2, number: 3},
+            {name: 'mine', length: 1, number: 3}
         ]);
     });
 
@@ -128,6 +132,7 @@ describe('ship placing limits', () => {
                 testBoard.unplacedShips[1].number,
                 testBoard.unplacedShips[2].number,
                 testBoard.unplacedShips[3].number,
+                testBoard.unplacedShips[4].number,
             ];
             return shipNumbers.reduce((num, total) => {
                 total += num;
@@ -292,17 +297,27 @@ describe('mine functions', () => {
         board2 = battleShips.gameBoard();
         player1 = battleShips.player(1, false);
         player2 = battleShips.player(2, false);
+        board1.placeShip(3, '[2,6]', 'horizontal');
+        board2.placeShip(3, '[2,6]', 'horizontal');
+        board2.placePhase[0] = false;
+        player2.isTurn = true;
     });
 
     test('can place mines', () => {
-        expect(board1.placeShip(1, '[8,9]', 'horizontal')).toHaveProperty('length');
+        expect(board1.placeShip(1, '[9,9]', 'horizontal')).toHaveProperty('length');
     });
 
     test('mines explode at center and hit all squares in a 3x3', () => {
-        expect().toBe();
+        board1.placeShip(1, '[4,4]', 'horizontal');
+        board1.placePhase[0] = false;
+        player2.takeTurn('[4,4]', board1, player2, player1, board2);
+        expect(board2.attackLog.length).toBe(9);
     });
 
     test('if mines explodes near edge blast is smaller', () => {
-        expect().toBe();
+        board1.placeShip(1, '[0,0]', 'horizontal');
+        board1.placePhase[0] = false;
+        player2.takeTurn('[0,0]', board1, player2, player1, board2);
+        expect(board2.attackLog.length).toBe(4);
     });
 });
