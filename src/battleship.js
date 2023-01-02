@@ -148,7 +148,7 @@ const battleShips = (() => {
         };
 
         const placeShip = (length, coords, direction) => {
-            if(!checkStorageForShip(length) || !placePhase[0]) return; //TBA
+            if(!checkStorageForShip(length) || !placePhase[0]) return;
             const [x, y] = [Number(coords[1]), Number(coords[3])];
             const con =
             (x + length >= 11 && direction === 'horizontal')

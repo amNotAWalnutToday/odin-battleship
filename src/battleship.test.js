@@ -280,3 +280,29 @@ describe('Ai logic', () => {
         expect(values).toContain(testAi.aiTakesTurn(testBoard, testAi, testPlayer, otherTestBoard));
     });
 });
+
+describe('mine functions', () => {
+    let board1 = battleShips.gameBoard();
+    let board2 = battleShips.gameBoard();
+    let player1 = battleShips.player(1, false);
+    let player2 = battleShips.player(2, false);
+    
+    beforeEach(() => {
+        board1 = battleShips.gameBoard();
+        board2 = battleShips.gameBoard();
+        player1 = battleShips.player(1, false);
+        player2 = battleShips.player(2, false);
+    });
+
+    test('can place mines', () => {
+        expect(board1.placeShip(1, '[8,9]', 'horizontal')).toHaveProperty('length');
+    });
+
+    test('mines explode at center and hit all squares in a 3x3', () => {
+        expect().toBe();
+    });
+
+    test('if mines explodes near edge blast is smaller', () => {
+        expect().toBe();
+    });
+});

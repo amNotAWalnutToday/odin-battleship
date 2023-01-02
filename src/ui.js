@@ -861,7 +861,7 @@ const userInterface = (() => {
         };
         
 
-        return { loadGameScreen, loadGameOverScreen };
+        return { loadGameScreen, };
     };
     
     return {
