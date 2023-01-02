@@ -315,14 +315,14 @@ const battleShips = (() => {
             }else if(!checkDown){
                 dir = `[${lastHit[1]},${down}]`;
             }else return;
-
-            if(!validateCoords(Number(dir[1]),Number(dir[3]))) return;
+            
+            if(!validateCoords(dir)) return;
             else return dir;
         };
 
-        const validateCoords = (x,y) => {
-            if(x > 9 || x < 0 || isNaN(x)) return;
-            else if(y > 9 || y < 0 || isNaN(y)) return;
+        const validateCoords = (dir) => {
+            // x / y is in 0 - 9 range if negative or 10 length will be higher //
+            if(dir.length !== 5) return;
             else return true;
         }
 
