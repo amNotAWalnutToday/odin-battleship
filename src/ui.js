@@ -84,7 +84,8 @@ const userInterface = (() => {
             isPlacing: false,
             length: 0,
             direction: 'horizontal',
-            phase: 'place' // or attack
+            phase: 'place', // or attack
+            miniGrid: false
         };
 
         const setContainer = () => {
@@ -136,6 +137,7 @@ const userInterface = (() => {
                     setTurnStatus();
                     changeGrid(player2, board2, true);
                     removePlaceShipButtons();
+                    addMiniGridBtn();
                 }, 2000);       
             }
         };
@@ -299,10 +301,10 @@ const userInterface = (() => {
 
         // grid //
 
-        const addGrid = (plusid = 'grid') => {
+        const addGrid = (plusid = 'grid', con = container) => {
             const grid = document.createElement('div');
             grid.setAttribute('id', `${plusid}`);
-            container.appendChild(grid);
+            con.appendChild(grid);
         }
 
         const setGridToPlayer = (player, board, plusid = 'grid') => {
@@ -372,6 +374,7 @@ const userInterface = (() => {
                     setTimeout(endTurn, 2000);
                 }
             }
+            if(player2.isAi && pointer.miniGrid) addMiniGrid();
             setTurnStatus();
             loseGame();
         };
@@ -527,6 +530,53 @@ const userInterface = (() => {
             }
         }
         // end of grid //
+        // mini grid
+        const addMiniGridBtn = () => {
+            if(!player2.isAi) return;
+            const con = document.querySelector('#ship-menu');
+            const btn = document.createElement('button');
+            btn.textContent = 'Toggle Grid';
+            btn.setAttribute('id', 'toggle-grid');
+            con.appendChild(btn);
+            toggleMiniGridEvents();
+        };
+
+        const addMiniGrid = () => {
+            const con = document.querySelector('#status-box')
+            removeMiniGrid();
+            addGrid('grid-2', con);
+            const grid2 = document.querySelector('#grid-2');
+            grid2.classList.add('mini-grid');
+            updateMiniGrid();
+            toggleMiniGridEvents();   
+        };
+
+        const updateMiniGrid = () => {
+            setGridToPlayer(player1, board1, 'grid-2');
+            markGrid(player1.playerNumber, board1, false);
+        };
+
+        const removeMiniGrid = () => {
+            const grid2 = document.querySelector('#grid-2');
+            if(!grid2) return;
+            grid2.remove();
+            toggleMiniGridEvents();
+        };
+
+        const toggleMiniGridEvents = () => {
+            const grid2 = document.querySelector('#grid-2');
+            const btn = document.querySelector('#toggle-grid');
+            if(!grid2){
+                btn.addEventListener('click', addMiniGrid);
+                btn.removeEventListener('click', removeMiniGrid);
+                pointer.miniGrid = false;
+            }else {
+                btn.addEventListener('click', removeMiniGrid);
+                btn.removeEventListener('click', addMiniGrid);
+                pointer.miniGrid = true;
+            }
+        }
+        //end of mini grid //
         // end of grid display //
         
         // place ship buttons //
@@ -786,7 +836,7 @@ const userInterface = (() => {
             addAnnouncement();
             setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-
+            placeAllShips(board1);
             setTurnStatus();
         };
 

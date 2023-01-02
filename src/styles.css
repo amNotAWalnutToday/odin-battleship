@@ -129,7 +129,7 @@
     z-index: 1;
 }
 
-@media(max-width: 420px){
+@media(max-width: 555px){
     #announcement {
         height: 15vh !important;
         white-space: pre;
@@ -148,7 +148,7 @@
 }
 
 #ship-menu {
-    position: sticky;
+    position: fixed;
     bottom: 0;
     left: 0;
     display: flex;
@@ -204,7 +204,7 @@ h1 {
 /*End of Text*/
 
 /*Images*/
-#status-box div {
+#status-box div:not(#grid-2) {
     display: inline-block;
     height: 25px;
     width: 25px;
@@ -364,18 +364,19 @@ h1 {
 #ship-menu button:hover,
 .title-screen button:hover {
     transform: scale(1.05);
-    filter: saturate(10%);
+    filter: brightness(110%);
     cursor: pointer;
 }
 
 #ship-menu button:first-child:hover.open,
 #ship-menu button:last-child:hover.flip{
-    /*rotate button only*/
+    /*rotate && place btn only*/
     transform: scale(-1.05, 1.05) !important;
 }
 
 #grid * {
     cursor: none !important;
+    user-select: none;
 }
 
 #place-ship {
