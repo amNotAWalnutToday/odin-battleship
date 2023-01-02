@@ -1,7 +1,6 @@
 import battleShips from "./battleship";
 import arrow from './img/arrow.png';
 import crosshair from './img/crosshairs-gps.png';
-import chevron from './img/chevron-right-box.png';
 import rotateIcon from './img/rotate-left.png';
 
 const userInterface = (() => {
@@ -577,11 +576,35 @@ const userInterface = (() => {
             ];
             const btnContainer = document.querySelector('#ship-menu');
             btnContainer.append(...btnsToAppend);
-            
+            addShipNumbers(...btnsToAppend);
             hideShipBtns(...btnsToAppend);
             // events //
             addShipButtonEvents();
             addClosePlaceShipEvent();
+        };
+
+        const addShipNumbers = (patrolBoat, submarine, battleship, carrier) => {
+            const pBoatN = document.createElement('p');
+            const submarineN = document.createElement('p');
+            const battleshipN = document.createElement('p');
+            const carrierN = document.createElement('p');
+
+            if(pointer.player === 1){
+                pBoatN.textContent = `x ${board1.unplacedShips[3].number}`;
+                submarineN.textContent = `x ${board1.unplacedShips[2].number}`;
+                battleshipN.textContent = `x ${board1.unplacedShips[1].number}`;
+                carrierN.textContent = `x ${board1.unplacedShips[0].number}`;
+            }else if(pointer.player === 2){
+                pBoatN.textContent = `x ${board2.unplacedShips[3].number}`;
+                submarineN.textContent = `x ${board2.unplacedShips[2].number}`;
+                battleshipN.textContent = `x ${board2.unplacedShips[1].number}`;
+                carrierN.textContent = `x ${board2.unplacedShips[0].number}`;
+            }
+
+            patrolBoat.appendChild(pBoatN);
+            submarine.appendChild(submarineN);
+            battleship.appendChild(battleshipN);
+            carrier.appendChild(carrierN);
         };
 
         const closePlaceShipMenu = () => {
@@ -802,4 +825,3 @@ export default userInterface;
 // try to add a small grid to show what the computer is doing on vs computer
 // add mines that explode on the your grid if you hit the enemies mines in a 3x3
 // clean code
-// add amount of ships to the buttons
