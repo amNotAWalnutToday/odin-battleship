@@ -71,7 +71,7 @@
     overflow-x: hidden;
     height: 100vh;
     width: 100vw;
-    background: url('https://cdn.pixabay.com/photo/2013/12/17/20/10/bubbles-230014_960_720.jpg');
+    background: url('./img/bubbles-bg.jpg');
     background-repeat: no-repeat;
     background-size: cover;
 }
@@ -148,6 +148,9 @@
 }
 
 #ship-menu {
+    position: sticky;
+    bottom: 0;
+    left: 0;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -171,6 +174,7 @@
     justify-content: space-evenly;
     height: fit-content;
     width: max(250px, 50vw);
+    gap: 1rem;
     margin: 1rem auto;
     background-color: var(--box-color);
     font-family: monofett;
@@ -213,10 +217,32 @@ h1 {
     vertical-align: bottom;
 }
 
+#ship-menu div.grid-ship {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 2px solid var(--outline-color);
+}
+
+@media (max-width: 372px) {
+    #ship-menu div.grid-ship{
+        width: 11px;
+        height: 11px;
+        border: 1px solid var(--outline-color);
+    }
+}
+
+#ship-menu img {
+    padding-top: 0.42rem;
+}
+
 .right {
     transform: rotate(90deg);
 }
 
+.flip {
+    transform: scaleX(-1);
+}
 
 /*End of Images*/
 
@@ -314,9 +340,19 @@ h1 {
 
 #ship-menu button {
     height: 50px;
-    width: 50px;
+    width: fit-content;
     background-color: rgba(0,0,0,0);
+    white-space: pre;
 }
+
+@media(min-width: 500px) {
+    #ship-menu button:not(:first-child):not(:last-child) {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    } 
+}
+
+
 
 #player-icon-container button:hover {
     cursor: pointer;
@@ -332,11 +368,29 @@ h1 {
     cursor: pointer;
 }
 
+#ship-menu button:first-child:hover.open,
+#ship-menu button:last-child:hover.flip{
+    /*rotate button only*/
+    transform: scale(-1.05, 1.05) !important;
+}
+
 #grid * {
     cursor: none !important;
 }
 
-#winner-box button {
+#place-ship {
+    width: 50px !important;
+    text-align: start;
+    background: url('./img/chevron-right-box.png');
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: bottom right;
+    padding: 0.5rem 0 2rem 0 !important;
+}
 
+#place-ship.open {
+    background-size: cover;
+    transform: rotate(180deg);
 }
 /* End of Buttons*/
+

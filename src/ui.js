@@ -1,6 +1,8 @@
 import battleShips from "./battleship";
 import arrow from './img/arrow.png';
 import crosshair from './img/crosshairs-gps.png';
+import chevron from './img/chevron-right-box.png';
+import rotateIcon from './img/rotate-left.png';
 
 const userInterface = (() => {
     const titleScreen = () => {
@@ -533,29 +535,37 @@ const userInterface = (() => {
             const btnContainer = document.createElement('div');
             btnContainer.setAttribute('id', 'ship-menu');
             const placeShipBtn = document.createElement('button');
-            placeShipBtn.textContent = '↓ Place Ships ↓';
+            placeShipBtn.textContent = 'Ships';
             placeShipBtn.setAttribute('id', 'place-ship');
             container.appendChild(btnContainer);
             btnContainer.appendChild(placeShipBtn);
         };
 
         const openPlaceShipMenu = () => {
+            const box = `<div class="grid-ship"></div>`
             // buttons //
+            // old //
+            const placeShip = document.querySelector('#place-ship');
+            placeShip.classList.add('open');
+            placeShip.textContent = ''
+            // new //
             const carrier = document.createElement('button');
             carrier.setAttribute('id', 'carrier');
-            carrier.textContent = 'Carrier (5)';
+            carrier.innerHTML = `${box}${box}${box}${box}${box}`;
             const battleship = document.createElement('button');
             battleship.setAttribute('id', 'battleship');
-            battleship.textContent = 'Battle ship (4)';
+            battleship.innerHTML = `${box}${box}${box}${box}`;
             const submarine = document.createElement('button');
             submarine.setAttribute('id', 'submarine');
-            submarine.textContent = 'Sub marine (3)';
+            submarine.innerHTML = `${box}${box}${box}`;
             const patrolBoat = document.createElement('button');
             patrolBoat.setAttribute('id', 'patrol-boat');
-            patrolBoat.textContent = 'Patrol boat (2)';
+            patrolBoat.innerHTML = `${box}${box}`;
             const rotate = document.createElement('button');
             rotate.setAttribute('id', 'rotate-ship');
-            rotate.textContent = '↷ Rotate Ship ↷';
+            const rotateInner = document.createElement('img');
+            rotateInner.setAttribute('src', `${rotateIcon}`);
+            rotate.appendChild(rotateInner);
             
             // container //
             const btnsToAppend = [
@@ -576,6 +586,9 @@ const userInterface = (() => {
 
         const closePlaceShipMenu = () => {
             const btnContainer = document.querySelector('#ship-menu');
+            const placeShipBtn = document.querySelector('#place-ship');
+            placeShipBtn.textContent = 'Ships';
+            placeShipBtn.classList.remove('open');
 
             while(btnContainer.children.length > 1){
                 btnContainer.removeChild(btnContainer.lastChild);
@@ -615,8 +628,17 @@ const userInterface = (() => {
                     ? pointer.direction = 'vertical'
                     : pointer.direction = 'horizontal'
                 : 'nothing to rotate';
+            toggleRotateIcon();
             setTurnStatus();
         };
+
+        const toggleRotateIcon = () => {
+            const rotateBtn = document.querySelector('#rotate-ship');
+
+            pointer.direction === 'horizontal'
+                ? rotateBtn.classList.remove('flip')
+                : rotateBtn.classList.add('flip');
+        }
 
         const addShipButtonEvents = () => {
             document.querySelector('#carrier')
@@ -777,5 +799,7 @@ const userInterface = (() => {
 
 export default userInterface;
 
-// next step => readjust the size for bigger width screens by moving the place ship widget higher
 // try to add a small grid to show what the computer is doing on vs computer
+// add mines that explode on the your grid if you hit the enemies mines in a 3x3
+// clean code
+// add amount of ships to the buttons
