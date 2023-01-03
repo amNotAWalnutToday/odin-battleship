@@ -270,7 +270,7 @@ describe('Ai logic', () => {
     test('ai board places ships randomly', () => {
         otherTestBoard.placePhase[0] = true;
         otherTestBoard.aiPlaceShip();
-        expect(otherTestBoard.ships.length).toBeGreaterThan(8); 
+        expect(otherTestBoard.ships.length).toBeGreaterThan(11); 
     });
 
     test('ai hits an adjacent spot when last turn is a hit', () => {

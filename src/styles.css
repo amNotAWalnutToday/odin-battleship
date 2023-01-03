@@ -61,6 +61,7 @@
 #title-screen-menu,
 #player-icon-container,
 #status-box,
+#mines,
 #ship-menu,
 #grid-2,
 #grid {
@@ -148,10 +149,9 @@
     background-color: var(--box-color);
 }
 
+#mines,
 #ship-menu {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -161,6 +161,18 @@
     padding: 0 0.5rem;
     background-color: var(--box-color);
     border-radius: 0 10px 10px 0;
+}
+
+#ship-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
+
+#mines {
+    position: fixed;
+    bottom: 80px;
+    left: 0;
 }
 
 @media(min-width: 1000px){
@@ -275,6 +287,32 @@ h1 {
     background-color: brown;
 }
 
+#status-box div.grid-mine {
+    background: url('./img/mine-clear.png');
+    background-size: contain;
+    padding: 0.75rem;
+}
+
+.p1.grid-mine:not(.grid-hit) {
+    background: url('./img/mine-dark.png');
+    background-size: contain;
+}
+
+.p1.grid-mine.grid-hit {
+    background: url('./img/whirlpool-miss-dark.png');
+    background-size: contain;
+}
+
+.p2.grid-mine.grid-hit {
+    background: url('./img/whirlpool-miss-light.png');
+    background-size: contain;
+}
+
+.p2.grid-mine {
+    background: url('./img/mine-light.png');
+    background-size: contain;
+}
+
 .grid-hit {
     background: url('./img/explosion-ship.png');
     background-size: contain;
@@ -354,6 +392,7 @@ h1 {
     transform: scale(1.1);
 }
 
+#place-mine,
 #ship-menu button {
     height: 50px;
     width: fit-content;
@@ -368,14 +407,13 @@ h1 {
     } 
 }
 
-
-
 #player-icon-container button:hover {
     cursor: pointer;
-    box-shadow: 0px 0px 5px 1px black;
+    box-shadow: 0px 0px 1px 1px black;
     transform: scale(1.2);
 }
 
+#mines button:hover,
 #winner-box button:hover,
 #ship-menu button:hover,
 .title-screen button:hover {
@@ -407,6 +445,15 @@ h1 {
 #place-ship.open {
     background-size: cover;
     transform: rotate(180deg);
+}
+
+#place-mine {
+    background: url('./img/mine-clear.png');
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: top;
+    padding: 2rem 0 1rem 0 !important;
+    white-space: pre;
 }
 /* End of Buttons*/
 

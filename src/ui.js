@@ -85,6 +85,7 @@ const userInterface = (() => {
             length: 0,
             direction: 'horizontal',
             phase: 'place', // or attack
+            round: 1,
             miniGrid: false
         };
 
@@ -108,6 +109,8 @@ const userInterface = (() => {
 
             if(con === 0 && ships.length > 0){
                 pointer.player = 2;
+                addPlaceMineButton();
+                addPlaceMineEvent();
                 setAnnouncement('Player 2 \n Placing Phase');
                 setTimeout(() => changeGrid(player2, board2, true), 1000);
                 setTimeout(() => pointer.phase = 'place', 1001);
@@ -137,6 +140,7 @@ const userInterface = (() => {
                     setTurnStatus();
                     changeGrid(player2, board2, true);
                     removePlaceShipButtons();
+                    removeMineMenu();
                     addMiniGridBtn();
                 }, 2000);       
             }
@@ -144,10 +148,12 @@ const userInterface = (() => {
 
         const endTurn = () => {
             if(player1.isTurn){
-                changeGrid(player2, board2);
+                changeGrid(player2, board2); 
+                pointer.round += 0.5;
             }else if (player2.isTurn){
                 changeGrid(player1, board1);
-            }
+                pointer.round += 0.5;
+            } 
             setTurnStatus();
             setAnnouncement('', true);
         };
@@ -202,7 +208,8 @@ const userInterface = (() => {
             const status1 = document.querySelector('#status-1');
             const status2 = document.querySelector('#status-2');
             const status3 = document.querySelector('#status-3');
-            const box = `<div class="grid-ship"></div>`
+            const box = `<div class="grid-ship"></div>`;
+            const mine = `<div class="grid-mine"></div>`;
             let textArrow = `<img src="${arrow}" />`;
 
             if(pointer.phase === "place"){
@@ -213,6 +220,9 @@ const userInterface = (() => {
                 switch(pointer.length) {
                     case 0:
                         status2.textContent = 'Ship: none(0)'
+                        break;
+                    case 1:
+                        status2.innerHTML = `Mine: ${mine}`;
                         break;
                     case 2:
                         status2.innerHTML = `Ship: ${box}${box}`;
@@ -232,7 +242,7 @@ const userInterface = (() => {
                 if(player1.isTurn)turn = 1;
                 else if(player2.isTurn) turn = 2;
                 status1.textContent = `Turn: player${turn}`;
-                status2.textContent = `Round: ${board2.attackLog.length}`;
+                status2.textContent = `Round: ${Math.floor(pointer.round)}`;
                 pointer.player === 1 
                     ? status3.textContent = `Ships Sunk: ${board1.checkNumOfSunkShips()}`
                     : status3.textContent = `Ships Sunk: ${board2.checkNumOfSunkShips()}`;
@@ -343,7 +353,8 @@ const userInterface = (() => {
             !board.isAi
                 ? board.placeShip(pointer.length, `[${x},${y}]`, pointer.direction)
                 : board.aiPlaceShip();
-            if(!board.isAi)markGridToShip(playerNumber, board);
+            if(!board.isAi)markGrid(playerNumber, board);
+            addMineNumbers();
 
             closePlaceShipMenu();
             openPlaceShipMenu();
@@ -375,6 +386,7 @@ const userInterface = (() => {
                 }
             }
             if(player2.isAi && pointer.miniGrid) addMiniGrid();
+            if(player2.isAi) pointer.round++;
             setTurnStatus();
             loseGame();
         };
@@ -385,13 +397,16 @@ const userInterface = (() => {
 
         const markGridToShip = (playerNumber, board) => {
             const gridSquares = document.querySelectorAll(`.p${playerNumber}`);
-            const coords = board.grid;
+            /*const coords = board.grid;*/
+            const bShips = board.ships; 
             const marked = [];
 
-            coords.forEach(coord => {
-                if(coord.shipHere) marked.push(coord.coordinate);
+            bShips.forEach(ship => {
+                if(ship.length > 1 )marked.push(...ship.coords);
             });
-
+            /*coords.forEach(coord => {
+                if(coord.shipHere) marked.push(coord.coordinate);
+            });*/
             gridSquares.forEach(square => {
                 const coords = square.id.replace(/grid-\w-/i, '');
                 const newCoords = `[${coords}]`;
@@ -403,8 +418,28 @@ const userInterface = (() => {
             });
         };
 
+        const markGridToMine = (playerNumber, board) => {
+            const gridSquares = document.querySelectorAll(`.p${playerNumber}`);
+            const bShips = board.ships;
+            const marked = [];
+
+            bShips.forEach(ship => {
+                if(ship.length === 1) marked.push(...ship.coords);
+            });
+
+            gridSquares.forEach(square => {
+                const coords = square.id.replace(/grid-\w-/i, '');
+                const newCoords = `[${coords}]`;
+                for(let i = 0; i < marked.length; i++){
+                    if(marked[i] === newCoords){
+                        square.classList.add('grid-mine');
+                    }
+                }
+            });
+        };
+
         const markGridToHoverShip = (e) => {
-            if(pointer.phase != 'place' || pointer.length < 2) return markGridToHoverHit(e);
+            if(pointer.phase != 'place' || pointer.length < 1) return markGridToHoverHit(e);
             let textArrow;
             pointer.direction === 'horizontal'
                 ? textArrow = `<img src="${arrow}" class="grid-right" />`
@@ -458,7 +493,10 @@ const userInterface = (() => {
         };
 
         const markGrid = (playerNumber, board, hideShips) => {
-            if(!hideShips) markGridToShip(playerNumber, board);
+            if(!hideShips) {
+                markGridToShip(playerNumber, board);
+                markGridToMine(playerNumber, board);
+            }
             markGridToHit(playerNumber, board);
             markGridToMiss(playerNumber, board);
         };
@@ -758,9 +796,50 @@ const userInterface = (() => {
             while(menu.firstChild){
                 menu.removeChild(menu.firstChild);
             }
-        }
+        };
 
         // end of place ship buttons //
+
+        // place mines //
+        const addPlaceMineButton = () => {
+            removeMineMenu();
+            const btnContainer = document.createElement('div');
+            btnContainer.setAttribute('id', 'mines');
+            const placeMineBtn = document.createElement('button');
+            placeMineBtn.textContent = 'Mines';
+            placeMineBtn.setAttribute('id', 'place-mine');
+            container.appendChild(btnContainer);
+            btnContainer.appendChild(placeMineBtn);
+            addMineNumbers();
+        };
+
+        const addMineNumbers = () => {
+            const btn = document.querySelector('#place-mine');
+            if(pointer.player === 1 && board1.unplacedShips[4].number > 0){
+                btn.textContent = `Mines x${board1.unplacedShips[4].number}`;
+            }else if(pointer.player === 2 && board2.unplacedShips[4].number >0){
+                btn.textContent = `Mines x${board2.unplacedShips[4].number}`;
+            }else removeMineBtn();
+            console.log(board2.unplacedShips);
+        };
+
+        const addPlaceMineEvent = () => {
+            document.querySelector('#place-mine')
+                .addEventListener('click', () =>  placeShipType(1));
+        };
+
+        const removeMineBtn = () => {
+            const mineBtn = document.querySelector('#mines');
+            while(mineBtn.firstChild){
+                mineBtn.removeChild(mineBtn.firstChild);
+            }
+        }
+
+        const removeMineMenu = () => {
+            const mineBtn = document.querySelector('#mines');
+            if(mineBtn) mineBtn.remove();
+        }
+        // end of place mines buttons //
 
         // game over //
         const addGrids = () => {
@@ -781,7 +860,7 @@ const userInterface = (() => {
 
         const setWinner = () => {
             const winner = document.querySelector('.winner');
-            const rounds = board2.attackLog.length;
+            const rounds = pointer.round;
             board1.lose()
                 ? winner.textContent = `Player 2 WINS! in ${rounds} rounds`
                 : winner.textContent = `Player 1 WINS! in ${rounds} rounds`
@@ -831,12 +910,14 @@ const userInterface = (() => {
             addIconEvents();
             addStatus();
             addPlaceShipButton();
+            addPlaceMineButton();
             addOpenPlaceShipEvent();
+            addPlaceMineEvent();
             addGridEvents(player1, board1);
             addAnnouncement();
             setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-            
+
             setTurnStatus();
         };
 

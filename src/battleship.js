@@ -102,7 +102,7 @@ const battleShips = (() => {
 
         const checkNumOfSunkShips = (sunkShips = []) => {
             ships.forEach(ship => {
-                if(ship.sunk) sunkShips.push(ship);
+                if(ship.sunk && ship.length > 1) sunkShips.push(ship);
             });
             return sunkShips.length;
         }
@@ -180,17 +180,18 @@ const battleShips = (() => {
 
         const aiPlaceShip = () => {
             let shipDirection;
-            const [check5, check4, check3, check2] = [
+            const [check5, check4, check3, check2, check1] = [
                 checkStorageForShip(5),
                 checkStorageForShip(4),
                 checkStorageForShip(3),
-                checkStorageForShip(2)
-            ]
+                checkStorageForShip(2),
+                checkStorageForShip(1)
+            ];
             const [x,y, dirDec] = [
                 Math.floor(Math.random() * 9.9),
                 Math.floor(Math.random() * 9.9),
-                Math.random(),
-            ]
+                Math.random()
+            ];
             if(dirDec > 0.49) shipDirection = 'vertical'
             else shipDirection = 'horizontal';
             if(check5){
@@ -201,8 +202,10 @@ const battleShips = (() => {
                 placeShip(3, `[${x},${y}]`, shipDirection);
             }else if(check2){
                 placeShip(2, `[${x},${y}]`, shipDirection);
+            }else if(check1){
+                placeShip(1, `[${x},${y}]`, shipDirection);
             }
-            if(check5 || check4 || check3 || check2){
+            if(check5 || check4 || check3 || check2 || check1){
                 return aiPlaceShip();
             }else {
                 return 'placed all ships';
@@ -239,10 +242,12 @@ const battleShips = (() => {
 
         const lose = () => {
             const comparison = [];
+            let exceptions = 0;
             ships.forEach(ship => {
-                if(ship.sunk) comparison.push(ship);
+                if(ship.sunk && ship.length != 1) comparison.push(ship);
+                else if(ship.length === 1) exceptions++
             });
-            return comparison.length >= ships.length;
+            return comparison.length >= ships.length - exceptions;
         };
 
         return {
