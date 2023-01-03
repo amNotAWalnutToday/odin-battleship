@@ -319,7 +319,6 @@ const userInterface = (() => {
 
         const setGridToPlayer = (player, board, plusid = 'grid') => {
             const grid = document.querySelector(`#${plusid}`);
-            console.log(grid);
             const playerNumber = player.playerNumber;
             const coords = board.grid;
             coords.forEach(coord => {
@@ -369,10 +368,11 @@ const userInterface = (() => {
                 Number(coords[2]),
                 Number(coords[4]),
             ];
-
+            if(board.checkGridForHit(`[${x},${y}]`)) return;
             if(playerNumber === 2 && player1.isTurn){
                 player1.takeTurn(`[${x},${y}]`, board, player1, player2, board1);
                 markGrid(playerNumber, board, true);
+                if(player2.isAi) pointer.round++;
                 if(!player1.isTurn){
                     setAnnouncement('Player 2 Turn');
                     setTimeout(endTurn, 2000);
@@ -386,7 +386,6 @@ const userInterface = (() => {
                 }
             }
             if(player2.isAi && pointer.miniGrid) addMiniGrid();
-            if(player2.isAi) pointer.round++;
             setTurnStatus();
             loseGame();
         };
@@ -820,7 +819,6 @@ const userInterface = (() => {
             }else if(pointer.player === 2 && board2.unplacedShips[4].number >0){
                 btn.textContent = `Mines x${board2.unplacedShips[4].number}`;
             }else removeMineBtn();
-            console.log(board2.unplacedShips);
         };
 
         const addPlaceMineEvent = () => {
@@ -953,5 +951,5 @@ const userInterface = (() => {
 
 export default userInterface;
 
-// add mines that explode on the your grid if you hit the enemies mines in a 3x3
+// fix bug with rounds in vs computer where tapping anywhere increases the round
 // clean code
