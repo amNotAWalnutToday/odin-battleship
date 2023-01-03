@@ -109,6 +109,7 @@
     grid-template-rows: repeat(auto-fit, calc(var(--grid-size-mini) / 10)) !important;
     width: var(--grid-size-mini) !important;
     height: var(--grid-size-mini) !important;
+    margin: 1rem auto !important
 }
 
 #announcement {
@@ -145,13 +146,17 @@
 #status-box {
     width: var(--grid-size);
     margin: 1rem auto;
-    padding: 2.5rem 0;
+    padding: 2rem 0;
     background-color: var(--box-color);
+}
+
+#status-box.reverse {
+    display: flex;
+    flex-direction: column-reverse;
 }
 
 #mines,
 #ship-menu {
-
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -257,6 +262,12 @@ h1 {
 
 #ship-menu img {
     padding-top: 0.42rem;
+}
+
+.none-sign {
+    background: url('./img/none-sign.png');
+    background-size: contain;
+    border: none !important;
 }
 
 .right {
@@ -365,6 +376,10 @@ h1 {
 /*End of Grid Components*/
 
 /* Buttons */
+button:not(#grid *):not(.open){
+    transition: all ease-out 0.1s;
+}
+
 #winner-box button,
 .title-screen button {
     height: 5rem;

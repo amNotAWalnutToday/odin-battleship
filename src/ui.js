@@ -210,6 +210,7 @@ const userInterface = (() => {
             const status3 = document.querySelector('#status-3');
             const box = `<div class="grid-ship"></div>`;
             const mine = `<div class="grid-mine"></div>`;
+            const none = `<div class="none-sign"></div>`
             let textArrow = `<img src="${arrow}" />`;
 
             if(pointer.phase === "place"){
@@ -219,7 +220,7 @@ const userInterface = (() => {
                 status3.innerHTML = `Direction: ${textArrow}`;
                 switch(pointer.length) {
                     case 0:
-                        status2.textContent = 'Ship: none(0)'
+                        status2.innerHTML = `Ship: ${none}`
                         break;
                     case 1:
                         status2.innerHTML = `Mine: ${mine}`;
@@ -581,6 +582,7 @@ const userInterface = (() => {
         const addMiniGrid = () => {
             const con = document.querySelector('#status-box')
             removeMiniGrid();
+            con.classList.add('reverse');
             addGrid('grid-2', con);
             const grid2 = document.querySelector('#grid-2');
             grid2.classList.add('mini-grid');
@@ -594,9 +596,11 @@ const userInterface = (() => {
         };
 
         const removeMiniGrid = () => {
+            const con = document.querySelector('#status-box')
             const grid2 = document.querySelector('#grid-2');
             if(!grid2) return;
             grid2.remove();
+            con.classList.remove('reverse');
             toggleMiniGridEvents();
         };
 
@@ -915,7 +919,7 @@ const userInterface = (() => {
             addAnnouncement();
             setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-
+            placeAllShips(board1);
             setTurnStatus();
         };
 
@@ -937,6 +941,7 @@ const userInterface = (() => {
             board.placeShip(3, '[0,6]', 'horizontal');
             board.placeShip(2, '[0,7]', 'horizontal');
             board.placeShip(2, '[0,8]', 'horizontal');
+            board.placeShip(2, '[0,9]', 'horizontal');
         };
         
 
@@ -951,5 +956,4 @@ const userInterface = (() => {
 
 export default userInterface;
 
-// fix bug with rounds in vs computer where tapping anywhere increases the round
 // clean code
