@@ -374,17 +374,15 @@ const userInterface = (() => {
                 player1.takeTurn(`[${x},${y}]`, board, player1, player2, board1);
                 markGrid(playerNumber, board, true);
                 if(player2.isAi) pointer.round++;
-                if(!player1.isTurn){
+                else {
                     setAnnouncement('Player 2 Turn');
                     setTimeout(endTurn, 2000);
                 }
             }else if(playerNumber === 1 && player2.isTurn){
                 player2.takeTurn(`[${x},${y}]`, board, player2, player1, board2);
                 markGrid(playerNumber, board, true);
-                if(!player2.isTurn){
-                    setAnnouncement('Player 1 Turn');
-                    setTimeout(endTurn, 2000);
-                }
+                setAnnouncement('Player 1 Turn');
+                setTimeout(endTurn, 2000);
             }
             if(player2.isAi && pointer.miniGrid) addMiniGrid();
             setTurnStatus();
@@ -397,16 +395,13 @@ const userInterface = (() => {
 
         const markGridToShip = (playerNumber, board) => {
             const gridSquares = document.querySelectorAll(`.p${playerNumber}`);
-            /*const coords = board.grid;*/
             const bShips = board.ships; 
             const marked = [];
 
             bShips.forEach(ship => {
                 if(ship.length > 1 )marked.push(...ship.coords);
             });
-            /*coords.forEach(coord => {
-                if(coord.shipHere) marked.push(coord.coordinate);
-            });*/
+
             gridSquares.forEach(square => {
                 const coords = square.id.replace(/grid-\w-/i, '');
                 const newCoords = `[${coords}]`;
@@ -669,6 +664,7 @@ const userInterface = (() => {
             btnContainer.append(...btnsToAppend);
             addShipNumbers(...btnsToAppend);
             hideShipBtns(...btnsToAppend);
+            toggleRotateIcon();
             // events //
             addShipButtonEvents();
             addClosePlaceShipEvent();
@@ -919,7 +915,6 @@ const userInterface = (() => {
             addAnnouncement();
             setAnnouncement('Player 1 \n Placing Phase')
             setTimeout(() => setAnnouncement('', true), 1000);
-            placeAllShips(board1);
             setTurnStatus();
         };
 
@@ -929,31 +924,12 @@ const userInterface = (() => {
             addReturnEvent();
         }
         // end of loading //
-        //////////////////
-        // remove below //
-        /////////////////
-        const placeAllShips = (board) => {
-            board.placeShip(5, '[0,1]', 'horizontal');
-            board.placeShip(4, '[0,2]', 'horizontal');
-            board.placeShip(3, '[0,3]', 'horizontal');
-            board.placeShip(3, '[0,4]', 'horizontal');
-            board.placeShip(3, '[0,5]', 'horizontal');
-            board.placeShip(3, '[0,6]', 'horizontal');
-            board.placeShip(2, '[0,7]', 'horizontal');
-            board.placeShip(2, '[0,8]', 'horizontal');
-            board.placeShip(2, '[0,9]', 'horizontal');
-        };
-        
-
         return { loadGameScreen, };
     };
     
     return {
         titleScreen,
-        gameScreen, //remove
     }
 })();
 
 export default userInterface;
-
-// clean code

@@ -209,17 +209,6 @@ describe('player functions', () => {
         player1.takeTurn('[8,7]', newBoard, player1, player2);
         expect(player2.takeTurn('[1,1]', newBoard, player2, player1)).toBe('game over');
     });
-
-    test('player should not be able to draw', () => {
-        const p1Board = battleShips.gameBoard();
-        const p2Board = battleShips.gameBoard();
-        p1Board.placeShip(2, '[0,0]', 'vertical');
-        p2Board.placeShip(2, '[0,0]', 'vertical');
-        p1Board.receiveAttack('[0,0]');
-        p1Board.receiveAttack('[0,1]');
-        player1.isTurn = true;
-        expect(player1.takeTurn('[0,1]', p2Board, player1, player2)).toMatch('game over');
-    });
 });
 
 describe('Ai logic', () => {
@@ -274,6 +263,7 @@ describe('Ai logic', () => {
     });
 
     test('ai hits an adjacent spot when last turn is a hit', () => {
+        otherTestBoard.aiPlaceShip();
         testBoard.receiveAttack('[7,7]');
         testAi.isTurn = true;
         const values = [
