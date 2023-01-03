@@ -231,13 +231,15 @@ const battleShips = (() => {
 
         const mineExplodes = (coords) => {
             const [x, y] = [Number(coords[1]), Number(coords[3])];
+            const mineCoords = [];
             for(let i = -1; i <= 1; i++){
                 for(let j = -1; j <= 1; j++){
-                    const attackCoords = `[${x+i},${y+j}]`;
-                    if(attackCoords.length === 5) receiveAttack(attackCoords);   
+                    const atkCoords = `[${x+i},${y+j}]`;
+                    if(checkGridForMine(atkCoords)) mineCoords.push(atkCoords);
+                    if(atkCoords.length === 5) receiveAttack(atkCoords);    
                 }
             }
-            console.log(attackLog);
+            if(mineCoords.length > 0) return mineCoords;
         };
 
         const lose = () => {
@@ -280,15 +282,21 @@ const battleShips = (() => {
 
         const takeTurn = (coords, board, user, target, targetsBoard) => {
             if(!user.isTurn || board.checkGridForHit(coords)) return;
-            const results = board.receiveAttack(coords, targetsBoard);
+            const results = board.receiveAttack(coords);
             if(results === 'hit' && board.checkGridForMine(coords)){
-                targetsBoard.mineExplodes(coords);
-            }
-            else if(results === 'game over') return 'game over';
+                hitMine(coords, board, targetsBoard);
+            } else if(results === 'game over') return 'game over';
             user.isTurn = false;
             target.isTurn = true;
             if(target.isAi) aiTakesTurn(targetsBoard, target, user, board);
             return `${results} at ${coords}`;
+        };
+
+        const hitMine = (coords, board, targetsBoard) => {
+            const chain = targetsBoard.mineExplodes(coords);
+            if(chain){
+                chain.forEach(mine => board.mineExplodes(mine));
+            }
         };
 
         const aiTakesTurn = (board, user, target, targetsBoard) => {

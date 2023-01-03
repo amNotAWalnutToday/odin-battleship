@@ -320,4 +320,14 @@ describe('mine functions', () => {
         player2.takeTurn('[0,0]', board1, player2, player1, board2);
         expect(board2.attackLog.length).toBe(4);
     });
+
+    test('if mines are in same place on both board both explode', () => {
+        board1.placeShip(1, '[4,4]', 'horizontal');
+        board2.placePhase[0] = true;
+        board2.placeShip(1, '[4,4]', 'horizontal');
+        board1.placePhase[0] = false;
+        board2.placePhase[0] = false;
+        player2.takeTurn('[4,4]', board1, player2, player1, board2); 
+        expect(board1.attackLog.length + board2.attackLog.length).toBe(18);
+    });
 });
